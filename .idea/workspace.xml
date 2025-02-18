@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9b25a978-bae0-462d-a167-ba91bb4832bf" name="Changes" comment="init">
+      <change beforePath="$PROJECT_DIR$/Backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/package.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Backend" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Bartobloko&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Bartobloko/Job.Ai-Backend.git&quot;,
+    &quot;accountId&quot;: &quot;ad8d71b2-dd3f-4b52-ba85-9dbd7ba4f1b0&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2rfgjH2xZpiNl6uYz6BXr6VNM9N" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Notification.DisplayName-DoNotAsk-GitHub Copilot&quot;: &quot;GitHub Copilot&quot;,
+    &quot;Notification.DoNotAsk-GitHub Copilot&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Projekty/JobBoardsChecker/Frontend/src/app/state&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\Projekty\\JobBoardsChecker\\Frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Projekty\JobBoardsChecker\Frontend\src\app\state" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\bot\scraper" />
+      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\user" />
+      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\settings" />
+      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\job" />
+      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\fakeJobs" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.24807.6" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9b25a978-bae0-462d-a167-ba91bb4832bf" name="Changes" comment="" />
+      <created>1736955677570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1736955677570</updated>
+      <workItem from="1736955679060" duration="10037000" />
+      <workItem from="1737022022903" duration="14515000" />
+      <workItem from="1737057200466" duration="1086000" />
+      <workItem from="1737102184209" duration="18518000" />
+      <workItem from="1737367657015" duration="32000" />
+      <workItem from="1737394269289" duration="925000" />
+      <workItem from="1737452995300" duration="17000" />
+      <workItem from="1737903270656" duration="55000" />
+      <workItem from="1738323190885" duration="3947000" />
+      <workItem from="1738580230977" duration="11956000" />
+      <workItem from="1738663641190" duration="592000" />
+      <workItem from="1738742380244" duration="13112000" />
+      <workItem from="1738789091263" duration="4582000" />
+      <workItem from="1738830341839" duration="7901000" />
+      <workItem from="1738854163257" duration="3443000" />
+      <workItem from="1738857887644" duration="223000" />
+      <workItem from="1738918384848" duration="2590000" />
+      <workItem from="1739121887927" duration="2254000" />
+      <workItem from="1739124330238" duration="54000" />
+      <workItem from="1739124392842" duration="3530000" />
+      <workItem from="1739229920527" duration="581000" />
+      <workItem from="1739267876700" duration="20000" />
+      <workItem from="1739363248223" duration="21000" />
+      <workItem from="1739401674123" duration="3086000" />
+      <workItem from="1739436916496" duration="13549000" />
+      <workItem from="1739481528302" duration="1605000" />
+      <workItem from="1739520169604" duration="18881000" />
+      <workItem from="1739555027473" duration="3450000" />
+      <workItem from="1739862858743" duration="10296000" />
+      <workItem from="1739898421754" duration="1384000" />
+    </task>
+    <task id="LOCAL-00001" summary="init">
+      <option name="closed" value="true" />
+      <created>1739445336393</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1739445336393</updated>
+    </task>
+    <task id="LOCAL-00002" summary="angualar update">
+      <option name="closed" value="true" />
+      <created>1739445600196</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1739445600196</updated>
+    </task>
+    <task id="LOCAL-00003" summary="update wip">
+      <option name="closed" value="true" />
+      <created>1739445885311</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1739445885311</updated>
+    </task>
+    <task id="LOCAL-00004" summary="updated all packages">
+      <option name="closed" value="true" />
+      <created>1739446086235</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1739446086235</updated>
+    </task>
+    <task id="LOCAL-00005" summary="init">
+      <option name="closed" value="true" />
+      <created>1739898688040</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1739898688040</updated>
+    </task>
+    <task id="LOCAL-00006" summary="init">
+      <option name="closed" value="true" />
+      <created>1739898891089</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1739898891089</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="angualar update" />
+    <MESSAGE value="update wip" />
+    <MESSAGE value="updated all packages" />
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/Frontend/src/utils/data-acces/user/user.service.ts</url>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/Backend/utils/endpoints/job/jobRoutes.js</url>
+          <line>18</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/Frontend/src/features/auth/auth.component.html</url>
+          <line>5</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
