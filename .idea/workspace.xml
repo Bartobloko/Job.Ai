@@ -4,11 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9b25a978-bae0-462d-a167-ba91bb4832bf" name="Changes" comment="init" />
+    <list default="true" id="9b25a978-bae0-462d-a167-ba91bb4832bf" name="Changes" comment="test v2">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend" beforeDir="false" afterPath="$PROJECT_DIR$/Backend" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/utils/bot/bot.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/utils/bot/bot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/utils/bot/scraper/scraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/utils/bot/scraper/scraper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/utils/endpoints/job/jobRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/utils/endpoints/job/jobRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/utils/endpoints/settings/settingsRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/utils/endpoints/settings/settingsRoutes.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="repository" />
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Backend" />
@@ -50,6 +63,8 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.run.executor&quot;: &quot;Run&quot;,
+    &quot;npm.start.executor&quot;: &quot;Run&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
     &quot;ts.external.directory.path&quot;: &quot;E:\\Projekty\\JobBoardsChecker\\Frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -60,12 +75,35 @@
       <recent name="E:\Projekty\JobBoardsChecker\Frontend\src\app\state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Projekty\JobBoardsChecker\Frontend\src\utils\state\users" />
+      <recent name="E:\Projekty\JobBoardsChecker\Frontend\src\utils\state\user" />
+      <recent name="E:\Projekty\JobBoardsChecker\Frontend\src\utils\state\settings" />
       <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\bot\scraper" />
       <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\user" />
-      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\settings" />
-      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\job" />
-      <recent name="E:\Projekty\JobBoardsChecker\Backend\utils\endpoints\fakeJobs" />
     </key>
+  </component>
+  <component name="RunManager" selected="npm.start">
+    <configuration name="run" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/Backend/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="run" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/Frontend/package.json" />
+      <command value="start" />
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="npm.run" />
+      <item itemvalue="npm.start" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -111,7 +149,19 @@
       <workItem from="1739520169604" duration="18881000" />
       <workItem from="1739555027473" duration="3450000" />
       <workItem from="1739862858743" duration="10296000" />
-      <workItem from="1739898421754" duration="1654000" />
+      <workItem from="1739898421754" duration="1943000" />
+      <workItem from="1739957931783" duration="355000" />
+      <workItem from="1739994389089" duration="3699000" />
+      <workItem from="1740408224664" duration="4733000" />
+      <workItem from="1740422964660" duration="2227000" />
+      <workItem from="1740469535006" duration="55000" />
+      <workItem from="1740523129721" duration="1644000" />
+      <workItem from="1740558391850" duration="4956000" />
+      <workItem from="1740778975654" duration="96000" />
+      <workItem from="1741011393530" duration="265000" />
+      <workItem from="1741164755562" duration="3039000" />
+      <workItem from="1741168191967" duration="1286000" />
+      <workItem from="1741253562886" duration="32000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -169,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739900131196</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="test v2">
+      <option name="closed" value="true" />
+      <created>1739900368789</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1739900368789</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,7 +238,8 @@
     <MESSAGE value="update wip" />
     <MESSAGE value="updated all packages" />
     <MESSAGE value="init" />
-    <option name="LAST_COMMIT_MESSAGE" value="init" />
+    <MESSAGE value="test v2" />
+    <option name="LAST_COMMIT_MESSAGE" value="test v2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
