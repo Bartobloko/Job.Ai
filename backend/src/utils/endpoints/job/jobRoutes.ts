@@ -244,4 +244,108 @@ router.delete('/responses', (req: any, res: Response): void => {
   });
 });
 
+// READ: Get distinct days that have job listings for the authenticated user
+router.get('/days', (req: any, res: Response): void => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Unauthorized. Please log in.' });
+    return;
+  }
+  const userId = req.user.id;
+
+  const sql = `
+    SELECT DISTINCT DATE(created_at) as job_date, 
+           COUNT(*) as job_count
+    FROM jobs 
+    WHERE account_id = ? 
+    GROUP BY DATE(created_at) 
+    ORDER BY job_date DESC
+  `;
+
+  connection.query(sql, [userId], (err: any, results: any[]) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+
+// POST: Recheck jobs from a specific day with Ollama
+router.post('/recheck/:date', async (req: any, res: Response): Promise<void> => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Unauthorized. Please log in.' });
+    return;
+  }
+  
+  const userId = req.user.id;
+  const { date } = req.params;
+
+  try {
+    // Import the analyzeJobWithOllama function
+    const { analyzeJobWithOllama } = await import('../../services/aiService');
+
+    // Get jobs from the specified date
+    const sql = `
+      SELECT j.*, COALESCE(gr.is_approved, 0) AS old_is_approved
+      FROM jobs j
+      LEFT JOIN gpt_responses gr ON j.id = gr.job_id AND gr.account_id = ?
+      WHERE j.account_id = ? AND DATE(j.created_at) = ?
+    `;
+
+    connection.query(sql, [userId, userId, date], async (err: any, jobs: any[]) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+
+      if (jobs.length === 0) {
+        res.status(404).json({ message: 'No jobs found for the specified date' });
+        return;
+      }
+
+      const changedJobs: any[] = [];
+      const recheckPromises = jobs.map(async (job) => {
+        try {
+          const oldApproval = job.old_is_approved;
+          await analyzeJobWithOllama(job, userId);
+          
+          // Get the new approval status
+          const checkSql = 'SELECT is_approved FROM gpt_responses WHERE job_id = ? AND account_id = ?';
+          return new Promise((resolve) => {
+            connection.query(checkSql, [job.id, userId], (checkErr: any, checkResults: any[]) => {
+              if (!checkErr && checkResults.length > 0) {
+                const newApproval = checkResults[0].is_approved;
+                if (oldApproval !== newApproval) {
+                  changedJobs.push({
+                    id: job.id,
+                    title: job.title,
+                    company: job.company,
+                    link: job.link,
+                    oldStatus: oldApproval ? 'approved' : 'not approved',
+                    newStatus: newApproval ? 'approved' : 'not approved'
+                  });
+                }
+              }
+              resolve(null);
+            });
+          });
+        } catch (error) {
+          console.error(`Error rechecking job ${job.id}:`, error);
+          return null;
+        }
+      });
+
+      await Promise.all(recheckPromises);
+
+      res.status(200).json({
+        message: `Rechecked ${jobs.length} jobs from ${date}`,
+        totalJobs: jobs.length,
+        changedJobs: changedJobs
+      });
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Error during recheck process: ' + error.message });
+  }
+});
+
 export default router;

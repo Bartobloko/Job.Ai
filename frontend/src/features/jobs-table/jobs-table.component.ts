@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { JobsService } from '../../utils/data-acces/jobs-service/jobs.service';
+import { JobsService, RecheckResult } from '../../utils/data-acces/jobs-service/jobs.service';
 import {DatePipe, SlicePipe, CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Job} from '../../utils/interfaces/job';
 import { NgIconComponent } from '@ng-icons/core';
+import { JobRecheckComponent } from '../../shared/components/job-recheck/job-recheck.component';
+import { JobStatusPopupComponent } from '../../shared/components/job-status-popup/job-status-popup.component';
 
 @Component({
     selector: 'app-jobs-table',
@@ -12,7 +14,9 @@ import { NgIconComponent } from '@ng-icons/core';
     SlicePipe,
     FormsModule,
     NgIconComponent,
-    CommonModule
+    CommonModule,
+    JobRecheckComponent,
+    JobStatusPopupComponent
 ],
     templateUrl: './jobs-table.component.html',
     styleUrls: ['./jobs-table.component.scss']
@@ -29,6 +33,10 @@ export class JobsTableComponent implements OnInit {
   allJobs: Job[] = [];
   filteredNewJobs: Job[] = [];
   filteredAllJobs: Job[] = [];
+
+  // Popup state
+  showStatusPopup: boolean = false;
+  recheckResult: RecheckResult | null = null;
 
   constructor(private jobsService: JobsService) {}
 
@@ -116,5 +124,42 @@ export class JobsTableComponent implements OnInit {
 
     this.filteredNewJobs.sort(compareFunction);
     this.filteredAllJobs.sort(compareFunction);
+  }
+
+  onRecheckComplete(result: RecheckResult) {
+    this.recheckResult = result;
+    this.showStatusPopup = true;
+    
+    // Refresh job data after recheck
+    this.refreshJobData();
+  }
+
+  onCloseStatusPopup() {
+    this.showStatusPopup = false;
+    this.recheckResult = null;
+  }
+
+  private refreshJobData() {
+    // Refresh all jobs
+    this.jobsService.getJobOffers().subscribe({
+      next: (jobs) => {
+        this.allJobs = jobs;
+        this.filterJobs();
+      },
+      error: (err) => {
+        console.error('Error refreshing job offers', err);
+      }
+    });
+
+    // Refresh today's jobs
+    this.jobsService.getTodayJobOffers().subscribe({
+      next: (jobs: Job[]) => {
+        this.newJobs = jobs;
+        this.filterJobs();
+      },
+      error: (err) => {
+        console.error('Error refreshing today\'s job offers', err);
+      }
+    });
   }
 }
