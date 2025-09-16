@@ -253,7 +253,7 @@ router.get('/days', (req: any, res: Response): void => {
   const userId = req.user.id;
 
   const sql = `
-    SELECT DISTINCT DATE(created_at) as job_date, 
+    SELECT DISTINCT DATE_FORMAT(DATE(created_at), '%Y-%m-%d') as job_date, 
            COUNT(*) as job_count
     FROM jobs 
     WHERE account_id = ? 
@@ -284,22 +284,41 @@ router.post('/recheck/:date', async (req: any, res: Response): Promise<void> => 
     // Import the analyzeJobWithOllama function
     const { analyzeJobWithOllama } = await import('../../services/aiService');
 
+    // Extract just the date part (YYYY-MM-DD) from the input date
+    // Handle both ISO format (2025-09-14T22:00:00.000Z) and simple date format (2025-09-14)
+    let dateOnly: string;
+    try {
+      const parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        // If date parsing fails, assume it's already in YYYY-MM-DD format
+        dateOnly = date;
+      } else {
+        // Convert to YYYY-MM-DD format
+        dateOnly = parsedDate.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      // Fallback to original date if parsing fails
+      dateOnly = date;
+    }
+
+    console.log(`Rechecking jobs for date: ${date} -> normalized to: ${dateOnly}`);
+
     // Get jobs from the specified date
     const sql = `
       SELECT j.*, COALESCE(gr.is_approved, 0) AS old_is_approved
       FROM jobs j
       LEFT JOIN gpt_responses gr ON j.id = gr.job_id AND gr.account_id = ?
-      WHERE j.account_id = ? AND DATE(j.created_at) = ?
+      WHERE j.account_id = ? AND DATE_FORMAT(DATE(j.created_at), '%Y-%m-%d') = ?
     `;
 
-    connection.query(sql, [userId, userId, date], async (err: any, jobs: any[]) => {
+    connection.query(sql, [userId, userId, dateOnly], async (err: any, jobs: any[]) => {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
       }
 
       if (jobs.length === 0) {
-        res.status(404).json({ message: 'No jobs found for the specified date' });
+        res.status(404).json({ message: `No jobs found for the specified date: ${dateOnly}` });
         return;
       }
 
@@ -338,7 +357,7 @@ router.post('/recheck/:date', async (req: any, res: Response): Promise<void> => 
       await Promise.all(recheckPromises);
 
       res.status(200).json({
-        message: `Rechecked ${jobs.length} jobs from ${date}`,
+        message: `Rechecked ${jobs.length} jobs from ${dateOnly}`,
         totalJobs: jobs.length,
         changedJobs: changedJobs
       });

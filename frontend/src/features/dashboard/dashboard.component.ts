@@ -179,9 +179,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onBotStart() {
     if (!this.isBotRunning) {
-      this.showBotStepper = true;
-      this.isBotRunning = true;
-      firstValueFrom(this.botService.startBot()).then();
+      // Don't set state optimistically - wait for API response
+      firstValueFrom(this.botService.startBot()).then(
+        () => {
+          // Success: state will be updated via WebSocket
+          console.log('Bot started successfully');
+        },
+        (error) => {
+          // Error: ensure UI state remains consistent
+          console.error('Failed to start bot:', error);
+          this.isBotRunning = false;
+          this.showBotStepper = false;
+          // Optionally show user-friendly error message
+        }
+      );
     }
   }
 
