@@ -15,7 +15,7 @@ export class SettingsComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   settingsForm: FormGroup;
-  settingsStore = inject(SettingsStore);
+  readonly settingsStore = inject(SettingsStore);
 
   constructor() {
     this.settingsForm = this.fb.group({

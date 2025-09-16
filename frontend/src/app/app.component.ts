@@ -15,9 +15,9 @@ import {SettingsStore} from '../utils/state/settings/settings.state';
 export class AppComponent implements OnInit {
   title = 'JobBoardsChecker';
 
-  usersStore = inject(UsersStore);
-  userStore = inject(UserStore);
-  settingsStore = inject(SettingsStore);
+  readonly usersStore = inject(UsersStore);
+  readonly userStore = inject(UserStore);
+  readonly settingsStore = inject(SettingsStore);
 
   constructor() {
   }

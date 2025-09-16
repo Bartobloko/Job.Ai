@@ -1,16 +1,14 @@
-import {Component, effect, inject, OnInit, OnDestroy} from '@angular/core';
-import {BotService} from '../../utils/data-acces/bot/bot.service';
+import {Component, effect, inject, OnInit, OnDestroy, HostListener} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {JobsService} from '../../utils/data-acces/jobs-service/jobs.service';
 import {StatsService} from './utils/stats-service/stats.service';
 import {Log} from './utils/interfaces/log';
 import { DatePipe, CommonModule } from '@angular/common';
 import {SettingsStore} from '../../utils/state/settings/settings.state';
 import {UserStore} from '../../utils/state/user/user.state';
-import {firstValueFrom, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import { NgIconComponent } from '@ng-icons/core';
-import { BotStepperComponent } from '../../shared/components/bot-stepper/bot-stepper.component';
-import { WebsocketService } from '../../utils/data-acces/websocket/websocket.service';
+import { ProfilesStore } from '../../utils/state/profiles/profiles.state';
+import { BotProfile } from '../../utils/interfaces/profile';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,8 +17,7 @@ import { WebsocketService } from '../../utils/data-acces/websocket/websocket.ser
     DatePipe,
     ReactiveFormsModule,
     NgIconComponent,
-    CommonModule,
-    BotStepperComponent
+    CommonModule
   ],
   templateUrl: './dashboard.component.html',
   standalone: true,
@@ -30,17 +27,21 @@ import { WebsocketService } from '../../utils/data-acces/websocket/websocket.ser
 
 
 export class DashboardComponent implements OnInit, OnDestroy {
-  private botService = inject(BotService);
   private statsService = inject(StatsService);
   private fb = inject(FormBuilder);
-  private websocketService = inject(WebsocketService);
 
-
-  settingsStore = inject(SettingsStore);
-  userStore = inject(UserStore);
+  readonly settingsStore = inject(SettingsStore);
+  readonly userStore = inject(UserStore);
+  readonly profilesStore = inject(ProfilesStore);
+  
   botForm: FormGroup;
-  showBotStepper = false;
-  isBotRunning = false;
+  profileForm: FormGroup;
+  
+  // Profile management state
+  showProfileModal = false;
+  showProfileDropdown = false;
+  editingProfile: BotProfile | null = null;
+  
   private subscriptions: Subscription[] = [];
 
   constructor() {
@@ -51,6 +52,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ]],
       blockedKeywords: ['', Validators.pattern('^([a-zA-Z0-9]+,\\s?)*[a-zA-Z0-9]+$')]
     });
+
+    this.profileForm = this.fb.group({
+      name: ['', Validators.required],
+      prompt: ['', Validators.required],
+      experience: ['', Validators.required],
+      blockedKeywords: ['', Validators.pattern('^([a-zA-Z0-9]+,\\s?)*[a-zA-Z0-9]+$')]
+    });
+
     effect(() => {
       const settings = this.settingsStore.shortSettings();
 
@@ -63,12 +72,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Effect to handle user ID changes (for initial load)
+    // Effect to handle selected profile changes
     effect(() => {
-      const userId = this.userStore.id();
-      if (userId !== 0 && !this.websocketService.isConnected()) {
-        this.initializeWebSocket();
-        this.checkBotStatus();
+      const selectedProfile = this.profilesStore.selectedProfile();
+      if (selectedProfile) {
+        this.botForm.patchValue({
+          prompt: selectedProfile.prompt,
+          experience: selectedProfile.experience,
+          blockedKeywords: selectedProfile.blockedKeywords,
+        });
       }
     });
   }
@@ -78,6 +90,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.userStore.id() === 0) {
       this.userStore.loadUser();
     }
+
+    // Load profiles
+    this.profilesStore.loadProfiles();
     
     this.statsService.getJobSummary().subscribe({
       next: (summary) => {
@@ -109,7 +124,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.error('Error fetching bot stats');
       }
     });
-
   }
 
   stats = {
@@ -129,71 +143,81 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  private initializeWebSocket() {
-    if (this.userStore.id() !== 0) {
-      this.websocketService.connect(this.userStore.id().toString());
-      
-      // Subscribe to bot status updates
-      this.subscriptions.push(
-        this.websocketService.botStatus$.subscribe(status => {
-          this.isBotRunning = status.isRunning;
-          this.showBotStepper = status.isRunning;
-        })
-      );
+  // Profile Management Methods
+  toggleProfileDropdown(): void {
+    this.showProfileDropdown = !this.showProfileDropdown;
+  }
 
-      // Subscribe to bot completion to hide stepper
-      this.subscriptions.push(
-        this.websocketService.botComplete$.subscribe(() => {
-          this.isBotRunning = false;
-          // Keep stepper visible for a moment to show completion
-          setTimeout(() => {
-            this.showBotStepper = false;
-          }, 3000);
-        })
-      );
+  selectProfile(profile: BotProfile | null): void {
+    this.profilesStore.selectProfile(profile?.id || null);
+    this.showProfileDropdown = false;
+  }
 
-      // Subscribe to bot errors to hide stepper
-      this.subscriptions.push(
-        this.websocketService.botError$.subscribe(() => {
-          this.isBotRunning = false;
-          // Keep stepper visible for a moment to show error
-          setTimeout(() => {
-            this.showBotStepper = false;
-          }, 5000);
-        })
-      );
+  openProfileModal(profile?: BotProfile): void {
+    this.editingProfile = profile || null;
+    if (profile) {
+      this.profileForm.patchValue({
+        name: profile.name,
+        prompt: profile.prompt,
+        experience: profile.experience,
+        blockedKeywords: profile.blockedKeywords
+      });
+    } else {
+      // Pre-fill with current form values when creating new profile
+      this.profileForm.patchValue({
+        name: '',
+        prompt: this.botForm.get('prompt')?.value || '',
+        experience: this.botForm.get('experience')?.value || '',
+        blockedKeywords: this.botForm.get('blockedKeywords')?.value || ''
+      });
     }
+    this.showProfileModal = true;
   }
 
-  private checkBotStatus() {
-    this.botService.getBotStatus().subscribe({
-      next: (status) => {
-        this.isBotRunning = status.isRunning;
-        this.showBotStepper = status.isRunning;
-      },
-      error: (error) => {
-        console.error('Error checking bot status:', error);
-      }
-    });
+  closeProfileModal(): void {
+    this.showProfileModal = false;
+    this.editingProfile = null;
+    this.profileForm.reset();
   }
 
-  onBotStart() {
-    if (!this.isBotRunning) {
-      // Don't set state optimistically - wait for API response
-      firstValueFrom(this.botService.startBot()).then(
-        () => {
-          // Success: state will be updated via WebSocket
-          console.log('Bot started successfully');
-        },
-        (error) => {
-          // Error: ensure UI state remains consistent
-          console.error('Failed to start bot:', error);
-          this.isBotRunning = false;
-          this.showBotStepper = false;
-          // Optionally show user-friendly error message
+  async saveProfile(): Promise<void> {
+    if (this.profileForm.valid) {
+      const profileData = {
+        name: this.profileForm.get('name')?.value,
+        prompt: this.profileForm.get('prompt')?.value,
+        experience: this.profileForm.get('experience')?.value,
+        blockedKeywords: this.profileForm.get('blockedKeywords')?.value
+      };
+
+      if (this.editingProfile) {
+        // Update existing profile
+        const success = await this.profilesStore.updateProfile(this.editingProfile.id, profileData);
+        if (success) {
+          this.closeProfileModal();
         }
-      );
+      } else {
+        // Create new profile
+        const newProfileId = await this.profilesStore.createProfile(profileData);
+        if (newProfileId) {
+          this.closeProfileModal();
+        }
+      }
     }
+  }
+
+  async deleteProfile(profile: BotProfile): Promise<void> {
+    if (confirm(`Are you sure you want to delete the profile "${profile.name}"?`)) {
+      await this.profilesStore.deleteProfile(profile.id);
+    }
+  }
+
+  loadProfile(profile: BotProfile): void {
+    this.botForm.patchValue({
+      prompt: profile.prompt,
+      experience: profile.experience,
+      blockedKeywords: profile.blockedKeywords
+    });
+    this.profilesStore.selectProfile(profile.id);
   }
 
   onSettingsSave() {
@@ -204,6 +228,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         blocked_keywords: this.botForm.get('blockedKeywords')?.value || '',
       };
       this.settingsStore.updateSettings(partialSettings);
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.showProfileDropdown = false;
     }
   }
 

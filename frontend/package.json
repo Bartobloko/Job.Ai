@@ -22,7 +22,7 @@
     "@ng-icons/heroicons": "^32.1.0",
     "@ng-icons/lucide": "^32.1.0",
     "@ng-icons/tabler-icons": "^32.1.0",
-    "@ngrx/signals": "^19.0.1",
+    "@ngrx/signals": "^19.0.0",
     "flowbite": "^2.5.2",
     "ngx-cookie-service": "^19.1.0",
     "rxjs": "~7.8.0",
