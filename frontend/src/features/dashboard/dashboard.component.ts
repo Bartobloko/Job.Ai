@@ -30,9 +30,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private statsService = inject(StatsService);
   private fb = inject(FormBuilder);
 
-  settingsStore = inject(SettingsStore);
-  userStore = inject(UserStore);
-  profilesStore = inject(ProfilesStore);
+  readonly settingsStore = inject(SettingsStore);
+  readonly userStore = inject(UserStore);
+  readonly profilesStore = inject(ProfilesStore);
   
   botForm: FormGroup;
   profileForm: FormGroup;

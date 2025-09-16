@@ -36,9 +36,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isBotRunning = false;
   selectedTaskForDetail: string | null = null;
 
-  usersStore = inject(UsersStore);
-  userStore = inject(UserStore);
-  tasksStore = inject(TasksStore);
+  readonly usersStore = inject(UsersStore);
+  readonly userStore = inject(UserStore);
+  readonly tasksStore = inject(TasksStore);
   
   private subscriptions: Subscription[] = [];
 

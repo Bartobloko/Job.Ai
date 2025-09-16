@@ -15,8 +15,8 @@ import { UserStore } from '../../../utils/state/user/user.state';
 })
 export class JobRecheckComponent implements OnInit {
   private jobsService = inject(JobsService);
-  private tasksStore = inject(TasksStore);
-  private userStore = inject(UserStore);
+  private readonly tasksStore = inject(TasksStore);
+  private readonly userStore = inject(UserStore);
 
   readonly recheckComplete = output<RecheckResult>();
 

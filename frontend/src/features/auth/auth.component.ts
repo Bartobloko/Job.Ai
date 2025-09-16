@@ -21,8 +21,8 @@ export class AuthComponent {
   private router = inject(Router);
 
 
-  usersStore = inject(UsersStore);
-  userStore = inject(UserStore);
+  readonly usersStore = inject(UsersStore);
+  readonly userStore = inject(UserStore);
 
   showDeleteConfirm: boolean = false;
 
