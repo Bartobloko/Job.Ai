@@ -1,5 +1,5 @@
 import { computed } from '@angular/core';
-import { signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { TaskEntry, TaskProgress } from '../../interfaces/task';
 
 interface TasksState {
@@ -40,18 +40,20 @@ export const TasksStore = signalStore(
         id: generateTaskId()
       };
       
-      store.tasks.update(tasks => [...tasks, newTask]);
+      patchState(store, {
+        tasks: [...store.tasks(), newTask]
+      });
       return newTask.id;
     },
 
     updateTask(taskId: string, updates: Partial<TaskEntry>): void {
-      store.tasks.update(tasks => 
-        tasks.map(task => 
+      patchState(store, {
+        tasks: store.tasks().map(task => 
           task.id === taskId 
             ? { ...task, ...updates, updatedAt: new Date() } as TaskEntry
             : task
         )
-      );
+      });
     },
 
     updateTaskProgress(taskId: string, progress: TaskProgress): void {
@@ -79,27 +81,31 @@ export const TasksStore = signalStore(
     },
 
     removeTask(taskId: string): void {
-      store.tasks.update(tasks => tasks.filter(task => task.id !== taskId));
+      const currentTasks = store.tasks();
+      const currentSelectedId = store.selectedTaskId();
       
-      // Clear selection if the removed task was selected
-      if (store.selectedTaskId() === taskId) {
-        store.selectedTaskId.set(null);
-      }
+      patchState(store, {
+        tasks: currentTasks.filter(task => task.id !== taskId),
+        // Clear selection if the removed task was selected
+        selectedTaskId: currentSelectedId === taskId ? null : currentSelectedId
+      });
     },
 
     selectTask(taskId: string | null): void {
-      store.selectedTaskId.set(taskId);
+      patchState(store, { selectedTaskId: taskId });
     },
 
     clearCompletedTasks(): void {
-      store.tasks.update(tasks => 
-        tasks.filter(task => task.status !== 'completed')
-      );
+      patchState(store, {
+        tasks: store.tasks().filter(task => task.status !== 'completed')
+      });
     },
 
     clearAllTasks(): void {
-      store.tasks.set([]);
-      store.selectedTaskId.set(null);
+      patchState(store, {
+        tasks: [],
+        selectedTaskId: null
+      });
     },
   }))
 );
