@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account_settings {
+  id                    Int       @id @default(autoincrement())
+  account_id            Int?
+  experience_level      String?   @default("Yor Expirience somethign like:Angular:0-2years") @db.Text
+  custom_prompt         String?   @default("'Your prompt something like:Im looking for a job as a Frontend Angular Developer. Dont accept anything that\\\\'s not Fronted Angular job or just a FrontEnd job without framework,I know English:C1 and Polish: Native.I\\\\'m not a disabled person.   '") @db.Text
+  blocked_keywords      String?   @default("React") @db.Text
+  first_name            String?   @db.VarChar(50)
+  last_name             String?   @db.VarChar(50)
+  about_me              String?   @db.Text
+  cv_path               Bytes?    @db.Blob
+  updated_at            DateTime  @default(now()) @db.Timestamp(0)
+  linkedIn_li_at_cookie String?   @db.MediumText
+  ai_model              String    @default("phi4") @db.Text
+  justJoin_links        String?   @db.LongText
+  theProtocol_links     String?   @db.LongText
+  noFluffJobs_links     String?   @db.LongText
+  linkedIn_links        String?   @db.LongText
+  talent_links          String?   @db.LongText
+  accounts              accounts? @relation(fields: [account_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "account_settings_ibfk_1")
+
+  @@index([account_id], map: "account_id")
+}
+
+model account_stats {
+  id                   Int       @id @default(autoincrement())
+  account_id           Int
+  bot_activation_count Int?      @default(0)
+  last_bot_use         DateTime? @db.Timestamp(0)
+  accounts             accounts  @relation(fields: [account_id], references: [id], onUpdate: Restrict, map: "account_stats_ibfk_1")
+
+  @@index([account_id], map: "idx_account_stats_account_id")
+}
+
+model accounts {
+  id               Int                @id @default(autoincrement())
+  username         String             @unique(map: "username") @db.VarChar(50)
+  created_at       DateTime           @default(now()) @db.Timestamp(0)
+  account_settings account_settings[]
+  account_stats    account_stats[]
+  bot_logs         bot_logs[]
+  gpt_responses    gpt_responses[]
+  jobs             jobs[]
+}
+
+model bot_logs {
+  id          Int       @id @default(autoincrement())
+  account_id  Int?
+  action_type String?   @db.VarChar(50)
+  description String?   @db.Text
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  accounts    accounts? @relation(fields: [account_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "bot_logs_ibfk_1")
+
+  @@index([account_id], map: "idx_bot_logs_account_id")
+  @@index([created_at], map: "idx_bot_logs_created_at")
+}
+
+model fake_jobs {
+  fake_job_id          Int    @id @default(autoincrement())
+  fake_job_description String @db.LongText
+}
+
+model gpt_responses {
+  id          Int       @id @default(autoincrement())
+  job_id      Int?
+  account_id  Int?
+  response    String?   @db.Text
+  is_approved Boolean?  @default(false)
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+  jobs        jobs?     @relation(fields: [job_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "gpt_responses_ibfk_1")
+  accounts    accounts? @relation(fields: [account_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "gpt_responses_ibfk_2")
+
+  @@index([account_id], map: "idx_gpt_responses_account_id")
+  @@index([job_id], map: "idx_gpt_responses_job_id")
+}
+
+model jobs {
+  id            Int             @id @default(autoincrement())
+  account_id    Int
+  title         String          @db.VarChar(255)
+  description   String?         @db.Text
+  company       String?         @db.VarChar(100)
+  link          String?         @db.VarChar(255)
+  haveApplied   Boolean         @default(false)
+  created_at    DateTime        @default(now()) @db.Timestamp(0)
+  gpt_responses gpt_responses[]
+  accounts      accounts        @relation(fields: [account_id], references: [id], onUpdate: Restrict, map: "jobs_ibfk_1")
+
+  @@index([created_at], map: "idx_jobs_created_at")
+  @@index([account_id], map: "user_id")
+}
