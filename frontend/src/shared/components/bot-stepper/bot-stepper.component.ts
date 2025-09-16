@@ -65,14 +65,14 @@ export class BotStepperComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.userId) {
-      this.websocketService.connect(this.userId);
+      // Don't connect here as connection is managed by dashboard
       this.setupSubscriptions();
     }
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.websocketService.disconnect();
+    // Don't disconnect websocket here as it's managed by dashboard
   }
 
   private setupSubscriptions() {

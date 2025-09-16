@@ -45,6 +45,7 @@ export interface BotError {
 export class WebsocketService {
   private socket: Socket | null = null;
   private connected = false;
+  private currentUserId: string | null = null;
 
   // Subjects for different event types
   private botStageUpdateSubject = new Subject<BotStage>();
@@ -52,6 +53,7 @@ export class WebsocketService {
   private analysisUpdateSubject = new Subject<AnalysisStageUpdate>();
   private botCompleteSubject = new Subject<BotComplete>();
   private botErrorSubject = new Subject<BotError>();
+  private botStatusSubject = new Subject<{ isRunning: boolean }>();
 
   // Public observables
   public botStageUpdate$ = this.botStageUpdateSubject.asObservable();
@@ -59,16 +61,27 @@ export class WebsocketService {
   public analysisUpdate$ = this.analysisUpdateSubject.asObservable();
   public botComplete$ = this.botCompleteSubject.asObservable();
   public botError$ = this.botErrorSubject.asObservable();
+  public botStatus$ = this.botStatusSubject.asObservable();
 
   constructor() {}
 
   connect(userId: string): void {
-    if (this.connected) {
+    if (this.connected && this.currentUserId === userId) {
       return;
     }
 
+    // Disconnect existing connection if user changed
+    if (this.connected && this.currentUserId !== userId) {
+      this.disconnect();
+    }
+
+    this.currentUserId = userId;
+
     this.socket = io('http://localhost:3000', {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
     });
 
     this.socket.on('connect', () => {
@@ -76,7 +89,9 @@ export class WebsocketService {
       this.connected = true;
       
       // Join user-specific room
-      this.socket?.emit('join-user-room', userId);
+      if (this.currentUserId) {
+        this.socket?.emit('join-user-room', this.currentUserId);
+      }
     });
 
     this.socket.on('disconnect', () => {
@@ -114,6 +129,12 @@ export class WebsocketService {
       this.botErrorSubject.next(data);
     });
 
+    // Listen for bot status updates
+    this.socket.on('bot-status', (data: { isRunning: boolean }) => {
+      console.log('Bot status received:', data);
+      this.botStatusSubject.next(data);
+    });
+
     this.socket.on('connect_error', (error) => {
       console.error('WebSocket connection error:', error);
     });
@@ -124,6 +145,15 @@ export class WebsocketService {
       this.socket.disconnect();
       this.socket = null;
       this.connected = false;
+      this.currentUserId = null;
+    }
+  }
+
+  // Force reconnection
+  reconnect(): void {
+    if (this.currentUserId) {
+      this.disconnect();
+      this.connect(this.currentUserId);
     }
   }
 

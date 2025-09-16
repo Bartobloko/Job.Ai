@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { connection } from '../../database/database';
 import { analyzeJobWithOllama, analyzeAllFakeJobs } from '../../services/aiService';
 import { AuthenticatedRequest, Job } from '../../../types';
+import websocketService from '../../../services/websocketService';
 
 const router = express.Router();
 
@@ -155,6 +156,17 @@ router.get('/logs', (req: any, res: Response): void => {
     }
     res.json(results);
   });
+});
+
+// Endpoint to check bot status
+router.get('/status', (req: any, res: Response): void => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Invalid token' });
+    return;
+  }
+
+  const isRunning = websocketService.isBotRunning(req.user.id.toString());
+  res.json({ isRunning });
 });
 
 export default router;

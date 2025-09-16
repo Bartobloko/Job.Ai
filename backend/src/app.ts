@@ -40,6 +40,10 @@ io.on('connection', (socket) => {
     socket.on('join-user-room', (userId: string) => {
         socket.join(`user-${userId}`);
         console.log(`User ${userId} joined their room`);
+        
+        // Send current bot status when user joins
+        const isRunning = websocketService.isBotRunning(userId);
+        socket.emit('bot-status', { isRunning });
     });
 });
 

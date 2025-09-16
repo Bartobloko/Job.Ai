@@ -6,6 +6,9 @@ import websocketService from '../../services/websocketService';
 
 const getJobDetails = async (accountId: number): Promise<void> => {
   try {
+    // Mark bot as running
+    websocketService.setBotRunning(accountId.toString(), true);
+    
     // Emit bot start
     websocketService.emitBotStageUpdate(accountId.toString(), {
       stage: 'scraping',
@@ -27,7 +30,7 @@ const getJobDetails = async (accountId: number): Promise<void> => {
     // Emit scraping completion
     websocketService.emitBotStageUpdate(accountId.toString(), {
       stage: 'scraping',
-      status: 'completed',
+      status: 'done',
       message: `Successfully scraped ${scrappedJobs.length} jobs`
     });
 
@@ -99,7 +102,7 @@ const getJobDetails = async (accountId: number): Promise<void> => {
       // Emit analysis completion
       websocketService.emitBotStageUpdate(accountId.toString(), {
         stage: 'analysis',
-        status: 'completed',
+        status: 'done',
         message: `Completed analysis. Analyzed: ${analyzedJobsCount} jobs`
       });
     }
