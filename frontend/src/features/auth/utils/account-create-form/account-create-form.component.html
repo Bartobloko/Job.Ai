@@ -1,0 +1,181 @@
+<div class="p-6 bg-gray-50">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-gray-900">Create New Job.Ai Account</h1>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex-1 flex items-center">
+        <div class="flex-1 h-1"></div>
+        <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ' + (currentStep >= 1 ? 'bg-primary-600' : 'bg-gray-400')">
+          1
+        </div>
+        <div [class]="'flex-1 h-1 transition-colors ' + (currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200')"></div>
+      </div>
+      <div class="flex-1 flex items-center">
+        <div [class]="'flex-1 h-1 transition-colors ' + (currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200')"></div>
+        <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ' + (currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-400')">
+          2
+        </div>
+        <div [class]="'flex-1 h-1 transition-colors ' + (currentStep >= 3 ? 'bg-primary-600' : 'bg-gray-200')"></div>
+      </div>
+      <div class="flex-1 flex items-center">
+        <div [class]="'flex-1 h-1 transition-colors ' + (currentStep >= 3 ? 'bg-primary-600' : 'bg-gray-200')"></div>
+        <div [class]="'w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ' + (currentStep >= 3 ? 'bg-primary-600' : 'bg-gray-400')">
+          3
+        </div>
+        <div class="flex-1 h-1 "></div>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+      <!-- Step 1: Account Setup -->
+      @if (currentStep === 1) {
+        <div class="space-y-6">
+          <h2 class="text-xl font-bold text-gray-900">Account Setup</h2>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Username</label>
+            <input
+              type="text"
+              [(ngModel)]="formData.username"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="Username for this site only"
+            />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">First Name</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.first_name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                placeholder="First name used for auto apply"
+              />
+            </div>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Last Name</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.last_name"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                placeholder="Last name used for auto apply"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">About Me</label>
+            <textarea
+              [(ngModel)]="formData.about_me"
+              rows="3"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="About me that will be used for auto apply (most people put here links for their LinkedIn, GitHub, etc)"
+            ></textarea>
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Job Preferences -->
+      @if (currentStep === 2) {
+        <div class="space-y-6">
+          <h2 class="text-xl font-bold text-gray-900">Job Preferences</h2>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Custom Application Prompt</label>
+            <textarea
+              [(ngModel)]="formData.custom_prompt"
+              rows="3"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="Enter your custom application prompt"
+            ></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Job Experience</label>
+              <input
+                type="text"
+                [ngModel]="formData.experience_level"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                placeholder="Angular:0-2years, Html:0-3years"
+              />
+            </div>
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Blocked Keywords</label>
+              <input
+                type="text"
+                [ngModel]="formData.blocked_keywords"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                placeholder="PHP, WordPress, Drupal"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">CV Path</label>
+            <input
+              type="text"
+              [(ngModel)]="formData.cv_path"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="/path/to/your/cv.pdf"
+            />
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Integration Setup -->
+      @if (currentStep === 3) {
+        <div class="space-y-6">
+          <h2 class="text-xl font-bold text-gray-900">Integration Setup</h2>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">LinkedIn li_at Cookie</label>
+            <input
+              type="text"
+              [(ngModel)]="formData.linkedIn_li_at_cookie"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="Your LinkedIn li_at cookie value"
+            />
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900">Ollama Model Name</label>
+            <input
+              type="text"
+              [(ngModel)]="formData.ai_model"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+              placeholder="llama2"
+            />
+            <p class="mt-1 text-sm text-gray-500">Enter the name of your Ollama model (e.g., llama2, codellama, mistral)</p>
+          </div>
+        </div>
+      }
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-8">
+        @if (currentStep > 1) {
+          <button
+            (click)="previousStep()"
+            class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200"
+          >
+            Previous
+          </button>
+        }
+        <div class="flex-1"></div>
+        @if (currentStep < 3) {
+          <button
+            (click)="nextStep()"
+            class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300"
+          >
+            Next
+          </button>
+        }
+        @if (currentStep === 3) {
+          <button
+            (click)="createAccount()"
+            class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300"
+          >
+            Complete Setup
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>

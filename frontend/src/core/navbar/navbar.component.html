@@ -1,0 +1,221 @@
+<!-- Main Navigation -->
+<nav class="bg-white/90 backdrop-blur-md border-b border-gray-200/50 px-3 py-1 fixed left-0 right-0 top-0 z-50 shadow-soft">
+  <div class="flex flex-wrap justify-between items-center">
+    <!-- Logo and Brand -->
+    <div class="flex items-center">
+      <a href="#" class="flex items-center group">
+        <div class="relative">
+        <ng-icon name="heroBriefcase" class="w-4 h-4 text-primary-600 mr-1 transition-all duration-300 group-hover:scale-110 group-hover:text-primary-700"></ng-icon>
+        <div class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary-500 rounded-full animate-pulse-soft opacity-75"></div>
+      </div>
+      <span class="self-center text-sm font-semibold whitespace-nowrap bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">Job.AI</span>
+      </a>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="flex items-center lg:order-2">
+      <!-- Navigation Items -->
+      <div class="hidden lg:flex items-center space-x-1">
+        <a routerLink="dashboard" 
+           routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+           class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
+          <ng-icon name="heroHome" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+          <span class="text-sm font-medium">Dashboard</span>
+        </a>
+        <a routerLink="jobs" 
+           routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+           class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
+          <ng-icon name="heroDocument" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+          <span class="text-sm font-medium">Job Listings</span>
+        </a>
+        <a routerLink="settings" 
+           routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+           class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
+          <ng-icon name="heroCog6Tooth" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+          <span class="text-sm font-medium">Settings</span>
+        </a>
+      </div>
+
+      <!-- Account Dropdown -->
+      @if (userStore.username()){
+        <div class="relative ml-4 account-dropdown">
+          <button
+            type="button"
+            class="flex items-center py-2.5 px-4 text-sm font-medium text-secondary-700 rounded-xl hover:bg-secondary-50 transition-all duration-200 group border border-secondary-200"
+            (click)="toggleAccountDropdown()"
+          >
+            <div class="w-8 h-8 mr-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+              <ng-icon name="heroUser" class="w-4 h-4 text-white"></ng-icon>
+            </div>
+            <span class="max-w-32 truncate">{{userStore.username()}}</span>
+            <ng-icon 
+              name="heroChevronDown" 
+              class="w-4 h-4 ml-2 transition-transform duration-200"
+              [class.rotate-180]="isAccountDropdownOpen">
+            </ng-icon>
+          </button>
+
+          <!-- Account Dropdown Menu -->
+          @if (isAccountDropdownOpen) {
+            <div
+              class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-large py-3 border border-secondary-200/50 backdrop-blur-sm animate-slide-down"
+            >
+              <!-- Account List Header -->
+              <div class="px-4 py-2 text-sm text-secondary-600 border-b border-secondary-100">
+                <div class="font-semibold flex items-center">
+                  <ng-icon name="heroUsers" class="w-4 h-4 mr-2"></ng-icon>
+                  Switch Account
+                </div>
+              </div>
+              
+              <!-- Account List -->
+              <div class="max-h-48 overflow-y-auto py-2">
+                @for (account of accounts; track account) {
+                  <button
+                    (click)="selectAccount(account)"
+                    class="flex items-center w-full px-4 py-3 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+                  >
+                    <div class="w-8 h-8 mr-3 bg-gradient-to-br from-secondary-400 to-secondary-500 rounded-full flex items-center justify-center group-hover:from-primary-400 group-hover:to-primary-500 transition-all duration-200">
+                      <ng-icon name="heroUser" class="w-4 h-4 text-white"></ng-icon>
+                    </div>
+                    <div class="flex flex-col items-start">
+                      <span class="font-medium">{{ account.username }}</span>
+                      <span class="text-xs text-secondary-500">Active Account</span>
+                    </div>
+                    @if (userStore.username() === account.username) {
+                      <ng-icon name="heroCheck" class="w-4 h-4 ml-auto text-success-500"></ng-icon>
+                    }
+                  </button>
+                }
+              </div>
+              
+              <!-- Create New Account Button -->
+              <div class="border-t border-secondary-100 mt-2 pt-2">
+                <button
+                  (click)="toggleAccountDropdown()"
+                  routerLink="auth"
+                  class="flex items-center w-full px-4 py-3 text-sm text-primary-600 hover:bg-primary-50 transition-all duration-200 group"
+                >
+                  <div class="w-8 h-8 mr-3 bg-primary-100 rounded-full flex items-center justify-center group-hover:bg-primary-200 transition-all duration-200">
+                    <ng-icon name="heroPlus" class="w-4 h-4 text-primary-600"></ng-icon>
+                  </div>
+                  <span class="font-medium">Create New Account</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+      }
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="inline-flex items-center p-2.5 ml-2 text-sm text-secondary-600 rounded-xl lg:hidden hover:bg-secondary-100 focus:outline-none transition-all duration-200 mobile-menu"
+        (click)="toggleMobileMenu()"
+        >
+        <ng-icon 
+          name="heroBars3" 
+          class="w-6 h-6 transition-transform duration-200"
+          [class.rotate-90]="isMobileMenuOpen">
+        </ng-icon>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    @if (isMobileMenuOpen) {
+      <div class="w-full lg:hidden mt-4 mobile-menu animate-slide-down">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-medium border border-secondary-200/50 p-4 mx-2">
+          <nav class="flex flex-col space-y-1">
+            <a routerLink="dashboard" 
+               routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+               class="flex items-center space-x-3 py-3 px-4 text-secondary-700 rounded-xl hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+               (click)="toggleMobileMenu()">
+              <ng-icon name="heroHome" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+              <span class="font-medium">Dashboard</span>
+            </a>
+            <a routerLink="jobs" 
+               routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+               class="flex items-center space-x-3 py-3 px-4 text-secondary-700 rounded-xl hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+               (click)="toggleMobileMenu()">
+              <ng-icon name="heroDocument" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+              <span class="font-medium">Job Listings</span>
+            </a>
+            <a routerLink="settings" 
+               routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+               class="flex items-center space-x-3 py-3 px-4 text-secondary-700 rounded-xl hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+               (click)="toggleMobileMenu()">
+              <ng-icon name="heroCog6Tooth" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+              <span class="font-medium">Settings</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    }
+  </div>
+</nav>
+
+<!-- Spacer to prevent content from going under fixed navbar -->
+<div class="h-12"></div>
+
+
+
+<!--<div class="bg-gray-800/50  border-b border-primary-500/20">-->
+
+<!--  <div class="px-10">-->
+<!--    <div class="flex items-center justify-between h-16">-->
+<!--      &lt;!&ndash; Logo &ndash;&gt;-->
+<!--      <div class="flex items-center">-->
+<!--        <span class="text-primary-400 text-xl font-bold">Job.Ai</span>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Navigation &ndash;&gt;-->
+<!--      <div class="flex items-center gap-8 cursor-pointer">-->
+<!--        <div routerLink="dashboard" class="text-gray-300 hover:text-primary-400 transition-colors">-->
+<!--          Dashboard-->
+<!--        </div>-->
+<!--        <div routerLink="jobs" class="text-gray-300 hover:text-primary-400 transition-colors">-->
+<!--          Job Listings-->
+<!--        </div>-->
+<!--        <div routerLink="settings" class="text-gray-300 hover:text-primary-400 transition-colors">-->
+<!--          Settings-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Profile Dropdown &ndash;&gt;-->
+<!--        <div class="relative ">-->
+<!--          <button-->
+<!--            (click)="isProfileOpen = !isProfileOpen"-->
+<!--            class="flex items-center gap-2 text-gray-300 hover:text-primary-400 transition-colors">-->
+<!--            <img-->
+<!--              class="w-8 h-8 rounded-full border-2 border-primary-500/50"-->
+<!--              src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"-->
+<!--              alt="Profile"-->
+<!--            />-->
+<!--            <span>John Doe</span>-->
+<!--            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+<!--              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>-->
+<!--            </svg>-->
+<!--          </button>-->
+
+<!--          &lt;!&ndash; Dropdown Menu &ndash;&gt;-->
+<!--          @if (isProfileOpen) {-->
+<!--            <div-->
+<!--              class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-primary-500/20 py-2 z-40">-->
+<!--              <a href="/profile" class="block px-4 py-2 text-gray-300 hover:bg-primary-500/20 hover:text-primary-400">-->
+<!--                Profile Settings-->
+<!--              </a>-->
+<!--              <a href="/accounts" class="block px-4 py-2 text-gray-300 hover:bg-primary-500/20 hover:text-primary-400">-->
+<!--                Manage Accounts-->
+<!--              </a>-->
+<!--              <hr class="my-2 border-primary-500/20">-->
+<!--              <button class="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/20">-->
+<!--                Sign Out-->
+<!--              </button>-->
+<!--            </div>-->
+
+<!--          }-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
