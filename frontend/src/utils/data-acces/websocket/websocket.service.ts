@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 
 export interface BotStage {
   stage: 'scraping' | 'analysis';
-  status: 'in_progress' | 'completed' | 'error';
+  status: 'in_progress' | 'done' | 'error';
   message?: string;
   progress?: {
     current: number;

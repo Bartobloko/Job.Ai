@@ -51,7 +51,7 @@
               *ngIf="step.status !== 'pending'"
               [class]="'text-xs px-2 py-1 rounded-full font-medium ' + getStepStatusClass(step.status)">
               {{ step.status === 'in_progress' ? 'In Progress' : 
-                 step.status === 'completed' ? 'Completed' : 
+                 step.status === 'done' ? 'Completed' : 
                  step.status === 'error' ? 'Error' : 'Pending' }}
             </span>
           </div>
