@@ -14,6 +14,156 @@
 
     <!-- Navigation Links -->
     <div class="flex items-center lg:order-2">
+      <!-- Bot Controls -->
+      @if (userStore.username()) {
+        <div class="flex items-center gap-2 mr-4">
+          <!-- Bot Status Indicator -->
+          <div class="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-soft border border-white/50">
+            <div class="relative">
+              @if (isBotRunning) {
+                <div class="h-3 w-3 bg-success-500 rounded-full animate-pulse-soft"></div>
+                <div class="absolute inset-0 h-3 w-3 bg-success-400 rounded-full animate-ping opacity-30"></div>
+              } @else {
+                <div class="h-3 w-3 bg-secondary-400 rounded-full"></div>
+              }
+            </div>
+            <span class="text-sm font-semibold text-secondary-700">
+              {{ isBotRunning ? 'Bot Active' : 'Bot Idle' }}
+            </span>
+          </div>
+
+          <!-- Bot Start Button -->
+          <button 
+            type="button" 
+            [disabled]="isBotRunning"
+            [class]="isBotRunning ? 
+              'group relative overflow-hidden bg-secondary-400 text-white font-medium rounded-lg px-3 py-2 shadow-medium cursor-not-allowed opacity-60' :
+              'group relative overflow-hidden bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-medium rounded-lg px-3 py-2 shadow-medium hover:shadow-large transition-all duration-300 transform hover:scale-105'"
+            (click)="onBotStart()">
+            <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="flex items-center relative z-10">
+              @if (isBotRunning) {
+                <ng-icon name="heroClock" class="w-4 h-4 mr-2"></ng-icon>
+                <span class="text-sm">Running...</span>
+              } @else {
+                <ng-icon name="heroPlay" class="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+                <span class="text-sm">Run Bot</span>
+              }
+            </div>
+          </button>
+        </div>
+
+        <!-- Running Tasks Dropdown -->
+        <div class="relative mr-4 tasks-dropdown">
+          <button
+            type="button"
+            class="flex items-center py-1.5 px-3 text-sm font-medium text-secondary-700 rounded-lg hover:bg-secondary-50 transition-all duration-200 group border border-secondary-200 relative"
+            (click)="toggleTasksDropdown()"
+          >
+            <ng-icon name="heroListBullet" class="w-4 h-4 mr-2"></ng-icon>
+            <span>Tasks</span>
+            @if (tasksStore.hasRunningTasks()) {
+              <div class="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full flex items-center justify-center">
+                <span class="text-xs text-white font-bold">{{ tasksStore.runningTasks().length }}</span>
+              </div>
+            }
+            <ng-icon 
+              name="heroChevronDown" 
+              class="w-4 h-4 ml-2 transition-transform duration-200"
+              [class.rotate-180]="isTasksDropdownOpen">
+            </ng-icon>
+          </button>
+
+          <!-- Tasks Dropdown Menu -->
+          @if (isTasksDropdownOpen) {
+            <div class="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-large py-3 border border-secondary-200/50 backdrop-blur-sm animate-slide-down max-h-96 overflow-hidden">
+              <!-- Tasks Header -->
+              <div class="px-4 py-2 text-sm text-secondary-600 border-b border-secondary-100">
+                <div class="font-semibold flex items-center justify-between">
+                  <div class="flex items-center">
+                    <ng-icon name="heroListBullet" class="w-4 h-4 mr-2"></ng-icon>
+                    Running Tasks
+                  </div>
+                  @if (tasksStore.tasks().length > 0) {
+                    <button 
+                      (click)="tasksStore.clearCompletedTasks()"
+                      class="text-xs text-secondary-500 hover:text-secondary-700 transition-colors">
+                      Clear Completed
+                    </button>
+                  }
+                </div>
+              </div>
+              
+              <!-- Tasks List -->
+              <div class="max-h-64 overflow-y-auto py-2">
+                @if (tasksStore.tasks().length > 0) {
+                  @for (task of tasksStore.tasks(); track task.id) {
+                    <div class="px-4 py-3 hover:bg-primary-50 transition-all duration-200 border-l-4" 
+                         [class]="task.status === 'running' ? 'border-l-primary-500' : task.status === 'completed' ? 'border-l-success-500' : 'border-l-danger-500'">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 mb-1">
+                            <div [class]="task.status === 'running' ? 'w-2 h-2 bg-primary-500 rounded-full animate-pulse' : task.status === 'completed' ? 'w-2 h-2 bg-success-500 rounded-full' : 'w-2 h-2 bg-danger-500 rounded-full'"></div>
+                            <span class="text-sm font-medium text-secondary-900">{{ task.title }}</span>
+                            <span [class]="'text-xs px-2 py-1 rounded-full font-medium ' + (task.status === 'running' ? 'bg-primary-100 text-primary-700' : task.status === 'completed' ? 'bg-success-100 text-success-700' : 'bg-danger-100 text-danger-700')">
+                              {{ task.status === 'running' ? 'Running' : task.status === 'completed' ? 'Completed' : 'Error' }}
+                            </span>
+                          </div>
+                          <p class="text-xs text-secondary-600 mb-2">{{ task.description }}</p>
+                          <div class="flex items-center justify-between text-xs text-secondary-500">
+                            <span>Started: {{ task.startTime | date:'HH:mm:ss' }}</span>
+                            @if (task.endTime) {
+                              <span>Ended: {{ task.endTime | date:'HH:mm:ss' }}</span>
+                            }
+                          </div>
+                          @if (task.progress && task.status === 'running') {
+                            <div class="mt-2">
+                              <div class="flex items-center justify-between text-xs text-secondary-600 mb-1">
+                                <span>Progress</span>
+                                <span>{{ task.progress.current }}/{{ task.progress.total }}</span>
+                              </div>
+                              <div class="w-full bg-secondary-200 rounded-full h-1.5">
+                                <div class="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
+                                     [style.width.%]="(task.progress.current / task.progress.total) * 100">
+                                </div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                        <button 
+                          (click)="selectTaskForDetail(selectedTaskForDetail === task.id ? null : task.id)"
+                          class="ml-2 p-1 text-secondary-400 hover:text-secondary-600 transition-colors">
+                          <ng-icon 
+                            name="heroChevronDown" 
+                            class="w-4 h-4 transition-transform duration-200"
+                            [class.rotate-180]="selectedTaskForDetail === task.id">
+                          </ng-icon>
+                        </button>
+                      </div>
+                      
+                      <!-- Task Detail View with Stepper -->
+                      @if (selectedTaskForDetail === task.id && task.status === 'running' && task.type === 'bot_run') {
+                        <div class="mt-3 pt-3 border-t border-secondary-100">
+                          <app-bot-stepper 
+                            [userId]="task.userId" 
+                            [isVisible]="true">
+                          </app-bot-stepper>
+                        </div>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="px-4 py-8 text-center">
+                    <ng-icon name="heroListBullet" class="w-8 h-8 text-secondary-300 mx-auto mb-2"></ng-icon>
+                    <p class="text-sm text-secondary-500">No tasks running</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
       <!-- Navigation Items -->
       <div class="hidden lg:flex items-center space-x-1">
         <a routerLink="dashboard" 

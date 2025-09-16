@@ -4,51 +4,12 @@
     <!-- Header -->
     <div class="flex justify-between items-center animate-fade-in">
       <div>
-        <h1 class="text-xl font-bold bg-gradient-to-r from-secondary-900 to-primary-700 bg-clip-text text-transparent">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-secondary-900 to-primary-700 bg-clip-text text-transparent">
           Job.AI Dashboard
         </h1>
-        <p class="text-secondary-600 mt-1 text-sm">Monitor your job search automation</p>
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-soft border border-white/50">
-          <div class="relative">
-            @if (isBotRunning) {
-              <div class="h-3 w-3 bg-success-500 rounded-full animate-pulse-soft"></div>
-              <div class="absolute inset-0 h-3 w-3 bg-success-400 rounded-full animate-ping opacity-30"></div>
-            } @else {
-              <div class="h-3 w-3 bg-secondary-400 rounded-full"></div>
-            }
-          </div>
-          <span class="text-sm font-semibold text-secondary-700">
-            {{ isBotRunning ? 'Bot Active' : 'Bot Idle' }}
-          </span>
-        </div>
-        <button 
-          type="button" 
-          [disabled]="isBotRunning"
-          [class]="isBotRunning ? 
-            'group relative overflow-hidden bg-secondary-400 text-white font-medium rounded-lg px-3 py-2 shadow-medium cursor-not-allowed opacity-60' :
-            'group relative overflow-hidden bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-medium rounded-lg px-3 py-2 shadow-medium hover:shadow-large transition-all duration-300 transform hover:scale-105'"
-          (click)="onBotStart()">
-          <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="flex items-center relative z-10">
-            @if (isBotRunning) {
-              <ng-icon name="heroClock" class="w-4 h-4 mr-2"></ng-icon>
-              <span class="text-sm">Bot Running...</span>
-            } @else {
-              <ng-icon name="heroPlay" class="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110"></ng-icon>
-              <span class="text-sm">Run Bot</span>
-            }
-          </div>
-        </button>
+        <p class="text-secondary-600 mt-1 text-sm">Monitor your job search automation and manage bot configurations</p>
       </div>
     </div>
-
-    <!-- Bot Stepper -->
-    <app-bot-stepper 
-      [userId]="userStore.id().toString()" 
-      [isVisible]="showBotStepper">
-    </app-bot-stepper>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 animate-slide-up">
@@ -140,10 +101,73 @@
             </div>
             <div>
               <h5 class="text-base font-bold text-secondary-900">Bot Configuration</h5>
-              <p class="text-xs text-secondary-600">Customize your automation settings</p>
+              <p class="text-xs text-secondary-600">Customize your automation settings and manage profiles</p>
             </div>
           </div>
           <div class="flex gap-2">
+            <!-- Profile Management -->
+            <div class="relative">
+              <button 
+                (click)="toggleProfileDropdown()"
+                class="group relative overflow-hidden bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-lg px-3 py-1.5 transition-all duration-200 hover:scale-105 text-sm flex items-center">
+                <ng-icon name="heroUser" class="w-3 h-3 mr-1 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+                <span>{{ profilesStore.selectedProfile()?.name || 'Profiles' }}</span>
+                <ng-icon name="heroChevronDown" class="w-3 h-3 ml-1 transition-transform duration-200" [class.rotate-180]="showProfileDropdown"></ng-icon>
+              </button>
+              
+              @if (showProfileDropdown) {
+                <div class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-large py-2 border border-secondary-200/50 backdrop-blur-sm animate-slide-down z-10">
+                  <div class="px-3 py-2 text-xs text-secondary-600 border-b border-secondary-100 font-semibold">
+                    Saved Profiles
+                  </div>
+                  
+                  @if (profilesStore.profiles().length > 0) {
+                    @for (profile of profilesStore.profiles(); track profile.id) {
+                      <div class="flex items-center justify-between px-3 py-2 hover:bg-primary-50 transition-all duration-200 group">
+                        <button 
+                          (click)="selectProfile(profile)"
+                          class="flex-1 flex items-center text-left">
+                          <div class="w-2 h-2 bg-primary-500 rounded-full mr-2 opacity-60 group-hover:opacity-100"></div>
+                          <div>
+                            <div class="text-sm font-medium text-secondary-900">{{ profile.name }}</div>
+                            <div class="text-xs text-secondary-500">{{ profile.updatedAt | date:'MMM d, y' }}</div>
+                          </div>
+                          @if (profilesStore.selectedProfileId() === profile.id) {
+                            <ng-icon name="heroCheck" class="w-4 h-4 text-success-500 ml-2"></ng-icon>
+                          }
+                        </button>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            (click)="openProfileModal(profile)"
+                            class="p-1 text-secondary-400 hover:text-primary-600 transition-colors">
+                            <ng-icon name="heroPencil" class="w-3 h-3"></ng-icon>
+                          </button>
+                          <button 
+                            (click)="deleteProfile(profile)"
+                            class="p-1 text-secondary-400 hover:text-danger-600 transition-colors">
+                            <ng-icon name="heroTrash" class="w-3 h-3"></ng-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  } @else {
+                    <div class="px-3 py-4 text-center text-xs text-secondary-500">
+                      No saved profiles yet
+                    </div>
+                  }
+                  
+                  <div class="border-t border-secondary-100 mt-2 pt-2">
+                    <button 
+                      (click)="openProfileModal()"
+                      class="w-full flex items-center px-3 py-2 text-sm text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                      <ng-icon name="heroPlus" class="w-4 h-4 mr-2"></ng-icon>
+                      <span>Save Current as Profile</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+
             <button class="group relative overflow-hidden bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-lg px-3 py-1.5 transition-all duration-200 hover:scale-105 text-sm">
               <ng-icon name="heroComputerDesktop" class="w-3 h-3 mr-1 inline transition-transform duration-200 group-hover:scale-110"></ng-icon>
               <span>Test Bot</span>
@@ -330,3 +354,107 @@
     </div>
   </div>
 </div>
+
+<!-- Profile Modal -->
+@if (showProfileModal) {
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-secondary-900">
+            {{ editingProfile ? 'Edit Profile' : 'Save Profile' }}
+          </h3>
+          <button 
+            (click)="closeProfileModal()"
+            class="text-secondary-400 hover:text-secondary-600 transition-colors">
+            <ng-icon name="heroXMark" class="w-5 h-5"></ng-icon>
+          </button>
+        </div>
+        
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-secondary-700 mb-2">
+                Profile Name
+              </label>
+              <input 
+                type="text" 
+                formControlName="name"
+                class="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                placeholder="Enter profile name">
+              @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                <div class="text-danger-600 text-xs mt-1">
+                  Profile name is required
+                </div>
+              }
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-secondary-700 mb-2">
+                AI Evaluation Prompt
+              </label>
+              <textarea 
+                rows="3"
+                formControlName="prompt"
+                class="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                placeholder="Describe the criteria for evaluating job applications...">
+              </textarea>
+              @if (profileForm.get('prompt')?.invalid && profileForm.get('prompt')?.touched) {
+                <div class="text-danger-600 text-xs mt-1">
+                  Prompt is required
+                </div>
+              }
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-secondary-700 mb-2">
+                Experience Level
+              </label>
+              <input 
+                type="text"
+                formControlName="experience"
+                class="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                placeholder="e.g., Angular:0-2 years, Node:0-1 years">
+              @if (profileForm.get('experience')?.invalid && profileForm.get('experience')?.touched) {
+                <div class="text-danger-600 text-xs mt-1">
+                  Experience level is required
+                </div>
+              }
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-secondary-700 mb-2">
+                Blocked Keywords
+              </label>
+              <input 
+                type="text"
+                formControlName="blockedKeywords"
+                class="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                placeholder="Enter keywords to avoid, separated by commas">
+              @if (profileForm.get('blockedKeywords')?.invalid && profileForm.get('blockedKeywords')?.touched) {
+                <div class="text-danger-600 text-xs mt-1">
+                  Keywords must be separated by commas
+                </div>
+              }
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-6">
+            <button 
+              type="button"
+              (click)="closeProfileModal()"
+              class="flex-1 px-4 py-2 text-sm font-medium text-secondary-700 bg-secondary-100 hover:bg-secondary-200 rounded-lg transition-all duration-200">
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              [disabled]="!profileForm.valid"
+              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ editingProfile ? 'Update Profile' : 'Save Profile' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
