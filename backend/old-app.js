@@ -2,11 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const app = express();
+const oldApp = express();
 const port = 3000;
 
 // Create HTTP server
-const server = http.createServer(app);
+const server = http.createServer(oldApp);
 
 // Setup Socket.IO with CORS
 const io = new Server(server, {
@@ -17,15 +17,15 @@ const io = new Server(server, {
 });
 
 // Middleware to parse JSON bodies
-app.use(express.json());
+oldApp.use(express.json());
 
 // Middleware to parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
+oldApp.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
+oldApp.use(cors());
 
 // Make io available to routes
-app.set('io', io);
+oldApp.set('io', io);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 
 const initializeRoutes = require('./utils/endpoints/routes');
 
-initializeRoutes(app);
+initializeRoutes(oldApp);
 
 server.listen(port, () => {
     console.log(`Server started on ${port}`);
