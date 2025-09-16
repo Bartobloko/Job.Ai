@@ -1,135 +1,134 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { BotProfile, CreateProfileRequest } from '../../interfaces/profile';
-import { ProfileService } from '../../data-acces/profile/profile.service';
+import { firstValueFrom } from 'rxjs';
+import { ProfilesService, BotProfile, CreateProfileRequest, UpdateProfileRequest } from '../../data-acces/profiles/profiles.service';
 
 interface ProfilesState {
   profiles: BotProfile[];
-  selectedProfileId: string | null;
+  activeProfile: BotProfile | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ProfilesState = {
   profiles: [],
-  selectedProfileId: null,
+  activeProfile: null,
   loading: false,
-  error: null,
+  error: null
 };
 
 export const ProfilesStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed((store) => ({
-    selectedProfile: computed(() => {
-      const profileId = store.selectedProfileId();
-      return profileId ? store.profiles().find(p => p.id === profileId) || null : null;
-    }),
-  })),
-  withMethods((store, profileService = inject(ProfileService)) => ({
-    async loadProfiles(): Promise<void> {
-      patchState(store, { loading: true, error: null });
-      
-      try {
-        const profiles = await profileService.getProfiles().toPromise();
-        patchState(store, { 
-          profiles: profiles || [], 
-          loading: false 
-        });
-      } catch (error) {
-        patchState(store, { 
-          error: 'Failed to load profiles', 
-          loading: false 
-        });
-        console.error('Error loading profiles:', error);
-      }
-    },
-
-    async createProfile(profileData: CreateProfileRequest): Promise<string | null> {
-      patchState(store, { loading: true, error: null });
-      
-      try {
-        const newProfile = await profileService.createProfile(profileData).toPromise();
-        if (newProfile) {
+  withMethods(
+    (store, profilesService = inject(ProfilesService)) => ({
+      async loadProfiles() {
+        patchState(store, { loading: true, error: null });
+        try {
+          const profiles = await firstValueFrom(profilesService.getAllProfiles());
           patchState(store, { 
-            profiles: [...store.profiles(), newProfile],
+            profiles, 
             loading: false 
           });
-          return newProfile.id;
-        }
-        patchState(store, { loading: false });
-        return null;
-      } catch (error) {
-        patchState(store, { 
-          error: 'Failed to create profile', 
-          loading: false 
-        });
-        console.error('Error creating profile:', error);
-        return null;
-      }
-    },
-
-    async updateProfile(id: string, profileData: CreateProfileRequest): Promise<boolean> {
-      patchState(store, { loading: true, error: null });
-      
-      try {
-        const updatedProfile = await profileService.updateProfile({
-          id,
-          ...profileData
-        }).toPromise();
-        
-        if (updatedProfile) {
+        } catch (error: any) {
           patchState(store, { 
-            profiles: store.profiles().map(p => p.id === id ? updatedProfile : p),
+            loading: false, 
+            error: error.message || 'Failed to load profiles' 
+          });
+        }
+      },
+
+      async loadActiveProfile() {
+        patchState(store, { loading: true, error: null });
+        try {
+          const activeProfile = await firstValueFrom(profilesService.getActiveProfile());
+          patchState(store, { 
+            activeProfile, 
             loading: false 
           });
-          return true;
-        }
-        patchState(store, { loading: false });
-        return false;
-      } catch (error) {
-        patchState(store, { 
-          error: 'Failed to update profile', 
-          loading: false 
-        });
-        console.error('Error updating profile:', error);
-        return false;
-      }
-    },
-
-    async deleteProfile(id: string): Promise<boolean> {
-      patchState(store, { loading: true, error: null });
-      
-      try {
-        const success = await profileService.deleteProfile(id).toPromise();
-        if (success) {
-          const currentSelectedId = store.selectedProfileId();
+        } catch (error: any) {
           patchState(store, { 
-            profiles: store.profiles().filter(p => p.id !== id),
-            // Clear selection if deleted profile was selected
-            selectedProfileId: currentSelectedId === id ? null : currentSelectedId,
-            loading: false 
+            loading: false, 
+            error: error.message || 'No active profile found',
+            activeProfile: null 
           });
-          return true;
         }
-        patchState(store, { loading: false });
-        return false;
-      } catch (error) {
-        patchState(store, { 
-          error: 'Failed to delete profile', 
-          loading: false 
-        });
-        console.error('Error deleting profile:', error);
-        return false;
+      },
+
+      async createProfile(profile: CreateProfileRequest) {
+        patchState(store, { loading: true, error: null });
+        try {
+          await firstValueFrom(profilesService.createProfile(profile));
+          // Reload profiles to get the updated list
+          await this.loadProfiles();
+        } catch (error: any) {
+          patchState(store, { 
+            loading: false, 
+            error: error.message || 'Failed to create profile' 
+          });
+        }
+      },
+
+      async updateProfile(profileId: number, profile: UpdateProfileRequest) {
+        patchState(store, { loading: true, error: null });
+        try {
+          await firstValueFrom(profilesService.updateProfile(profileId, profile));
+          // Reload profiles to get the updated list
+          await this.loadProfiles();
+          // If this profile was active, reload active profile
+          if (store.activeProfile()?.id === profileId) {
+            await this.loadActiveProfile();
+          }
+        } catch (error: any) {
+          patchState(store, { 
+            loading: false, 
+            error: error.message || 'Failed to update profile' 
+          });
+        }
+      },
+
+      async activateProfile(profileId: number) {
+        patchState(store, { loading: true, error: null });
+        try {
+          await firstValueFrom(profilesService.activateProfile(profileId));
+          // Reload profiles and active profile
+          await this.loadProfiles();
+          await this.loadActiveProfile();
+        } catch (error: any) {
+          patchState(store, { 
+            loading: false, 
+            error: error.message || 'Failed to activate profile' 
+          });
+        }
+      },
+
+      async deleteProfile(profileId: number) {
+        patchState(store, { loading: true, error: null });
+        try {
+          await firstValueFrom(profilesService.deleteProfile(profileId));
+          // Reload profiles
+          await this.loadProfiles();
+          // If this was the active profile, clear it and try to load new active
+          if (store.activeProfile()?.id === profileId) {
+            patchState(store, { activeProfile: null });
+            await this.loadActiveProfile();
+          }
+        } catch (error: any) {
+          patchState(store, { 
+            loading: false, 
+            error: error.message || 'Failed to delete profile' 
+          });
+        }
+      },
+
+      clearError() {
+        patchState(store, { error: null });
       }
-    },
-
-    selectProfile(profileId: string | null): void {
-      patchState(store, { selectedProfileId: profileId });
-    },
-
-    clearError(): void {
-      patchState(store, { error: null });
-    },
+    })
+  ),
+  withComputed((state) => ({
+    hasProfiles: computed(() => state.profiles().length > 0),
+    hasActiveProfile: computed(() => state.activeProfile() !== null),
+    profilesCount: computed(() => state.profiles().length)
   }))
 );

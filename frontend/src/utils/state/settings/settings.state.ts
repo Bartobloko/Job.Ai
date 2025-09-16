@@ -5,15 +5,16 @@ import {SettingsService} from '../../data-acces/settings/settings.service';
 import {computed, inject} from '@angular/core';
 
 const initialState: Settings = {
-  experience_level: '',
-  custom_prompt: '',
-  blocked_keywords: '',
   first_name: null,
   last_name: null,
   about_me: null,
   cv_path: null,
   linkedIn_li_at_cookie: '',
-  ai_model: '',
+  justJoin_links: null,
+  theProtocol_links: null,
+  noFluffJobs_links: null,
+  linkedIn_links: null,
+  talent_links: null,
   updated_at: ''
 }
 
@@ -27,15 +28,16 @@ export const SettingsStore = signalStore(
         const settings = await firstValueFrom(settingsService.getAccountSettings());
         console.log('patching settings');
         patchState(store,{
-          experience_level: settings.experience_level,
-          custom_prompt: settings.custom_prompt,
-          blocked_keywords: settings.blocked_keywords,
           first_name: settings.first_name,
           last_name: settings.last_name,
           about_me: settings.about_me,
           cv_path: settings.cv_path,
           linkedIn_li_at_cookie: settings.linkedIn_li_at_cookie,
-          ai_model: settings.ai_model,
+          justJoin_links: settings.justJoin_links,
+          theProtocol_links: settings.theProtocol_links,
+          noFluffJobs_links: settings.noFluffJobs_links,
+          linkedIn_links: settings.linkedIn_links,
+          talent_links: settings.talent_links,
           updated_at: settings.updated_at
         });
         console.log('loaded settings', settings);
@@ -43,15 +45,16 @@ export const SettingsStore = signalStore(
       async updateSettings(settings: Partial<Settings>) {
         // Get current full settings to merge with the updates
         const currentSettings = {
-          experience_level: store.experience_level(),
-          custom_prompt: store.custom_prompt(),
-          blocked_keywords: store.blocked_keywords(),
           first_name: store.first_name(),
           last_name: store.last_name(),
           about_me: store.about_me(),
           cv_path: store.cv_path(),
           linkedIn_li_at_cookie: store.linkedIn_li_at_cookie(),
-          ai_model: store.ai_model(),
+          justJoin_links: store.justJoin_links(),
+          theProtocol_links: store.theProtocol_links(),
+          noFluffJobs_links: store.noFluffJobs_links(),
+          linkedIn_links: store.linkedIn_links(),
+          talent_links: store.talent_links(),
           updated_at: store.updated_at()
         };
 
@@ -64,12 +67,11 @@ export const SettingsStore = signalStore(
     })
   ),
   withComputed(( state ) => ({
-    shortSettings: computed(() => {
-      return {
-        experience_level: state.experience_level,
-        custom_prompt: state.custom_prompt,
-        blocked_keywords: state.blocked_keywords
-      }
+    hasPersonalInfo: computed(() => {
+      return !!(state.first_name() || state.last_name() || state.about_me());
+    }),
+    hasIntegrationSettings: computed(() => {
+      return !!(state.linkedIn_li_at_cookie() || state.justJoin_links() || state.theProtocol_links() || state.noFluffJobs_links() || state.linkedIn_links() || state.talent_links());
     })
   }))
 );

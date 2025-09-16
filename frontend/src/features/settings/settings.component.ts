@@ -19,11 +19,6 @@ export class SettingsComponent implements OnInit {
 
   constructor() {
     this.settingsForm = this.fb.group({
-      // Bot settings (from dashboard)
-      prompt: ['', Validators.required],
-      experience: ['', Validators.required],
-      blockedKeywords: ['', Validators.pattern('^([a-zA-Z0-9]+,\\s?)*[a-zA-Z0-9]+$')],
-
       // Profile settings
       firstName: [''],
       lastName: [''],
@@ -31,7 +26,11 @@ export class SettingsComponent implements OnInit {
 
       // Integration settings
       linkedInCookie: [''],
-      aiModel: ['']
+      justJoinLinks: [''],
+      theProtocolLinks: [''],
+      noFluffJobsLinks: [''],
+      linkedInLinks: [''],
+      talentLinks: ['']
     });
   }
 
@@ -39,14 +38,15 @@ export class SettingsComponent implements OnInit {
     // Load settings from the store
     this.settingsStore.loadSettings().then(() => {
       this.settingsForm.patchValue({
-        prompt: this.settingsStore.custom_prompt(),
-        experience: this.settingsStore.experience_level(),
-        blockedKeywords: this.settingsStore.blocked_keywords(),
         firstName: this.settingsStore.first_name(),
         lastName: this.settingsStore.last_name(),
         aboutMe: this.settingsStore.about_me(),
         linkedInCookie: this.settingsStore.linkedIn_li_at_cookie(),
-        aiModel: this.settingsStore.ai_model()
+        justJoinLinks: this.settingsStore.justJoin_links(),
+        theProtocolLinks: this.settingsStore.theProtocol_links(),
+        noFluffJobsLinks: this.settingsStore.noFluffJobs_links(),
+        linkedInLinks: this.settingsStore.linkedIn_links(),
+        talentLinks: this.settingsStore.talent_links()
       });
     });
   }
@@ -54,14 +54,15 @@ export class SettingsComponent implements OnInit {
   onSaveSettings() {
     if (this.settingsForm.valid) {
       const updatedSettings = {
-        custom_prompt: this.settingsForm.get('prompt')?.value || '',
-        experience_level: this.settingsForm.get('experience')?.value || '',
-        blocked_keywords: this.settingsForm.get('blockedKeywords')?.value || '',
         first_name: this.settingsForm.get('firstName')?.value,
         last_name: this.settingsForm.get('lastName')?.value,
         about_me: this.settingsForm.get('aboutMe')?.value,
         linkedIn_li_at_cookie: this.settingsForm.get('linkedInCookie')?.value || '',
-        ai_model: this.settingsForm.get('aiModel')?.value || ''
+        justJoin_links: this.settingsForm.get('justJoinLinks')?.value,
+        theProtocol_links: this.settingsForm.get('theProtocolLinks')?.value,
+        noFluffJobs_links: this.settingsForm.get('noFluffJobsLinks')?.value,
+        linkedIn_links: this.settingsForm.get('linkedInLinks')?.value,
+        talent_links: this.settingsForm.get('talentLinks')?.value
       };
 
       this.settingsStore.updateSettings(updatedSettings);

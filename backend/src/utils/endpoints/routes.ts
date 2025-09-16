@@ -5,6 +5,7 @@ import accountStatsRoutes from './acountStats/accountStatsRoutes';
 import fakeJobsRoutes from './fakeJobs/fakeJobsRoutes';
 import jobRoutes from './job/jobRoutes';
 import settingsRoutes from './settings/settingsRoutes';
+import profilesRoutes from './profiles/profilesRoutes';
 import decodeJWT from '../middleware/decodeJWT';
 
 function initializeRoutes(app: Express): void {
@@ -17,6 +18,7 @@ function initializeRoutes(app: Express): void {
   app.use('/api/fake_jobs', fakeJobsRoutes);
   app.use('/api/jobs', jobRoutes);
   app.use('/api/settings', settingsRoutes);
+  app.use('/api/profiles', profilesRoutes);
 }
 
 export default initializeRoutes;

@@ -178,6 +178,18 @@
           <ng-icon name="heroDocument" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
           <span class="text-sm font-medium">Job Listings</span>
         </a>
+        <a routerLink="profiles" 
+           routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+           class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
+          <ng-icon name="heroUser" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+          <span class="text-sm font-medium">Profiles</span>
+        </a>
+        <a routerLink="bot-testing" 
+           routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+           class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
+          <ng-icon name="heroBeaker" class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+          <span class="text-sm font-medium">Bot Testing</span>
+        </a>
         <a routerLink="settings" 
            routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
            class="flex items-center space-x-1 py-1 px-2 text-secondary-700 rounded-md hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 cursor-pointer group">
@@ -290,6 +302,20 @@
                (click)="toggleMobileMenu()">
               <ng-icon name="heroDocument" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
               <span class="font-medium">Job Listings</span>
+            </a>
+            <a routerLink="profiles" 
+               routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+               class="flex items-center space-x-3 py-3 px-4 text-secondary-700 rounded-xl hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+               (click)="toggleMobileMenu()">
+              <ng-icon name="heroUser" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+              <span class="font-medium">Profiles</span>
+            </a>
+            <a routerLink="bot-testing" 
+               routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"
+               class="flex items-center space-x-3 py-3 px-4 text-secondary-700 rounded-xl hover:bg-primary-50 hover:text-primary-700 transition-all duration-200 group"
+               (click)="toggleMobileMenu()">
+              <ng-icon name="heroBeaker" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></ng-icon>
+              <span class="font-medium">Bot Testing</span>
             </a>
             <a routerLink="settings" 
                routerLinkActive="bg-primary-50 text-primary-700 shadow-sm"

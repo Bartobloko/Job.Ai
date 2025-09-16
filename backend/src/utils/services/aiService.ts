@@ -2,8 +2,9 @@ import { connection } from '../database/database';
 import { Job, DatabaseResult } from '../../types';
 import { isJobAlreadyAnalyzed } from './jobService';
 import { logBotAction } from './statsService';
+import { getActiveProfile, getProfileById } from './profileService';
 
-interface AccountSettingsForAI {
+interface ProfileSettingsForAI {
   custom_prompt: string;
   experience_level: string;
   blocked_keywords: string;
@@ -32,29 +33,15 @@ async function makeOllamaQuery(prompt: string, aiModel: string): Promise<OllamaR
   return makeOllamaQuery(prompt, aiModel);
 }
 
-// Fetch custom prompt from account_settings
+// Analyze job using active bot profile
 const analyzeJobWithOllama = (job: Job, accountId: number): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const description = job.description.replace(/\n/g, ' ');
+  return new Promise(async (resolve, reject) => {
+    try {
+      const description = job.description.replace(/\n/g, ' ');
 
-    // Fetch custom prompt, experience level, blocked keywords and AI model from account_settings
-    const settingsQuery = 'SELECT custom_prompt, experience_level, blocked_keywords, ai_model FROM account_settings WHERE account_id = ?';
-    connection.query(settingsQuery, [accountId], async (err: any, results: any[]) => {
-      if (err) {
-        console.error('Error fetching account settings:', err);
-        await logBotAction(
-          accountId,
-          'SETTINGS_ERROR',
-          `Error fetching account settings: ${err.message}`
-        );
-        return reject('Error fetching account settings');
-      }
-      if (results.length === 0) {
-        console.error('No account settings found for account_id:', accountId);
-        return reject('No account settings found');
-      }
-
-      const { custom_prompt, experience_level, blocked_keywords, ai_model } = results[0];
+      // Fetch active profile settings
+      const profile = await getActiveProfile(accountId);
+      const { custom_prompt, experience_level, blocked_keywords, ai_model } = profile;
       const selectedModel = ai_model || 'phi4'; // Default to phi4 if ai_model is null
 
       const prompt = `${custom_prompt} my experience level: ${experience_level} say no if jobs are mainly about working in: ${blocked_keywords}.Answer 'yes' or 'no' then type short explanation.Put the answer first,before any other text. Job Description: ${description}`;
@@ -92,10 +79,60 @@ const analyzeJobWithOllama = (job: Job, accountId: number): Promise<string> => {
         );
         reject('Error during analysis with Ollama');
       }
-    });
+    } catch (error: any) {
+      console.error('Error fetching active profile:', error);
+      await logBotAction(
+        accountId,
+        'PROFILE_ERROR',
+        `Error fetching active profile: ${error.message}`
+      );
+      reject(error.message);
+    }
   });
 };
 
+const analyzeAllFakeJobsWithProfile = (profileId: number, accountId: number): Promise<AnalysisResult[]> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get profile settings
+      const profile = await getProfileById(profileId, accountId);
+      const { custom_prompt, experience_level, blocked_keywords, ai_model } = profile;
+      
+      const jobsQuery = 'SELECT * FROM fake_jobs';
+
+      connection.query(jobsQuery, (err, jobs: FakeJob[]) => {
+        if (err) {
+          console.error('Error fetching fake jobs:', err);
+          return reject(err);
+        }
+
+        const jobPromises = jobs.map(async (job) => {
+          const ollamaPrompt = `${custom_prompt} my experience level: ${experience_level} say no if jobs are mainly about working in: ${blocked_keywords}.Answer 'yes' or 'no' then type short explanation.Put the answer first,before any other text. Job Description: ${job.fake_job_description}`;
+          
+          try {
+            const response = await makeOllamaQuery(ollamaPrompt, ai_model || 'phi4');
+            const chatResponse = response.message.content;
+            console.log(chatResponse.slice(0, 4).toLowerCase());
+            const isApproved = chatResponse.slice(0, 4).toLowerCase().includes('yes');
+            return { jobId: job.fake_job_id, chatResponse, isApproved };
+          } catch (error) {
+            console.error('Error analyzing fake job:', error);
+            throw error;
+          }
+        });
+
+        Promise.all(jobPromises)
+          .then((results) => resolve(results))
+          .catch((error) => reject(error));
+      });
+    } catch (error: any) {
+      console.error('Error fetching profile for testing:', error);
+      reject(error);
+    }
+  });
+};
+
+// Keep the old function for backward compatibility but mark as deprecated
 const analyzeAllFakeJobs = (newPrompt: string, experience: string, blocked_keywords: string, aiModel = 'phi4'): Promise<AnalysisResult[]> => {
   return new Promise((resolve, reject) => {
     const jobsQuery = 'SELECT * FROM fake_jobs';
@@ -164,4 +201,4 @@ const updateGPTResponse = (jobId: number, response: string, isApproved: boolean,
   });
 };
 
-export { analyzeJobWithOllama, analyzeAllFakeJobs };
+export { analyzeJobWithOllama, analyzeAllFakeJobs, analyzeAllFakeJobsWithProfile };

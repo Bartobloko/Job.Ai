@@ -1,0 +1,244 @@
+<!-- Profile Management Container -->
+<div class="p-4 bg-gray-50 min-h-noScroll">
+  <div class="max-w-7xl mx-auto space-y-4">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+      <h1 class="text-xl font-bold text-gray-900">Bot Profiles</h1>
+      <button 
+        type="button" 
+        class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 flex items-center"
+        (click)="onCreateProfile()">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Create Profile
+      </button>
+    </div>
+
+    <!-- Error Message -->
+    @if (profilesStore.error()) {
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-red-800">{{ profilesStore.error() }}</span>
+          <button 
+            class="ml-auto text-red-600 hover:text-red-800"
+            (click)="onClearError()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Loading Indicator -->
+    @if (profilesStore.loading()) {
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+        <div class="flex items-center justify-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading profiles...
+        </div>
+      </div>
+    }
+
+    <!-- Active Profile Display -->
+    @if (profilesStore.activeProfile() && !profilesStore.loading()) {
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="text-green-800 font-medium">Active Profile: {{ profilesStore.activeProfile()!.name }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- No Active Profile Warning -->
+    @if (!profilesStore.activeProfile() && !profilesStore.loading() && profilesStore.hasProfiles()) {
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          <span class="text-yellow-800">No active profile selected. Please activate a profile to use the bot.</span>
+        </div>
+      </div>
+    }
+
+    <!-- Create/Edit Profile Form -->
+    @if (showCreateForm) {
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          {{ editingProfile ? 'Edit Profile' : 'Create New Profile' }}
+        </h2>
+        
+        <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
+          <div class="space-y-4">
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Profile Name</label>
+              <input 
+                type="text" 
+                formControlName="name" 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" 
+                placeholder="e.g., Frontend Developer, Senior Angular Developer">
+              @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+                <div class="text-red-500 text-sm mt-1">Profile name is required.</div>
+              }
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">AI Prompt</label>
+              <textarea 
+                rows="4" 
+                formControlName="custom_prompt" 
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" 
+                placeholder="Enter your AI evaluation prompt here..."></textarea>
+              @if (profileForm.get('custom_prompt')?.invalid && profileForm.get('custom_prompt')?.touched) {
+                <div class="text-red-500 text-sm mt-1">Prompt is required.</div>
+              }
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Job Experience</label>
+              <input 
+                type="text" 
+                formControlName="experience_level" 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" 
+                placeholder="e.g., Angular:0-2 years, Node:0-1 years, HTML:3 years">
+              @if (profileForm.get('experience_level')?.invalid && profileForm.get('experience_level')?.touched) {
+                <div class="text-red-500 text-sm mt-1">Experience is required.</div>
+              }
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">Blocked Keywords</label>
+              <input 
+                type="text" 
+                formControlName="blocked_keywords" 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" 
+                placeholder="Enter keywords separated by commas">
+            </div>
+
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-900">AI Model</label>
+              <select 
+                formControlName="ai_model" 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+                <option value="phi4">Phi 4</option>
+                <option value="llama3">Llama 3</option>
+                <option value="gemma">Gemma</option>
+                <option value="mistral">Mistral</option>
+              </select>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button 
+                type="button" 
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                (click)="onCancelEdit()">
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                [disabled]="!profileForm.valid"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                {{ editingProfile ? 'Update Profile' : 'Create Profile' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- Profiles List -->
+    @if (!profilesStore.loading() && profilesStore.hasProfiles()) {
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Your Profiles</h2>
+          
+          <div class="space-y-3">
+            @for (profile of profilesStore.profiles(); track profile.id) {
+              <div class="border border-gray-200 rounded-lg p-4" 
+                   [class.bg-green-50]="profile.is_active" 
+                   [class.border-green-300]="profile.is_active">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                      <h3 class="text-lg font-medium text-gray-900">{{ profile.name }}</h3>
+                      @if (profile.is_active) {
+                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Active
+                        </span>
+                      }
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">{{ profile.custom_prompt | slice:0:100 }}{{ profile.custom_prompt.length > 100 ? '...' : '' }}</p>
+                    <div class="text-xs text-gray-500 space-y-1">
+                      <div><strong>Experience:</strong> {{ profile.experience_level }}</div>
+                      @if (profile.blocked_keywords) {
+                        <div><strong>Blocked:</strong> {{ profile.blocked_keywords }}</div>
+                      }
+                      <div><strong>AI Model:</strong> {{ profile.ai_model }}</div>
+                      <div><strong>Updated:</strong> {{ profile.updated_at | date:'short' }}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2 ml-4">
+                    @if (!profile.is_active) {
+                      <button 
+                        class="px-3 py-1 text-xs font-medium text-green-700 bg-green-100 border border-green-300 rounded hover:bg-green-200"
+                        (click)="onActivateProfile(profile)">
+                        Activate
+                      </button>
+                    }
+                    <button 
+                      class="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded hover:bg-blue-200"
+                      (click)="onEditProfile(profile)">
+                      Edit
+                    </button>
+                    @if (!profile.is_active) {
+                      <button 
+                        class="px-3 py-1 text-xs font-medium text-red-700 bg-red-100 border border-red-300 rounded hover:bg-red-200"
+                        (click)="onDeleteProfile(profile)">
+                        Delete
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!profilesStore.loading() && !profilesStore.hasProfiles()) {
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+        <div class="text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No bot profiles</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating your first bot profile.</p>
+          <div class="mt-6">
+            <button 
+              type="button" 
+              class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
+              (click)="onCreateProfile()">
+              <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Create Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
