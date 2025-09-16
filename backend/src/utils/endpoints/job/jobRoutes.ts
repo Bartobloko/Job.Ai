@@ -253,7 +253,7 @@ router.get('/days', (req: any, res: Response): void => {
   const userId = req.user.id;
 
   const sql = `
-    SELECT DISTINCT DATE(created_at) as job_date, 
+    SELECT DISTINCT DATE_FORMAT(DATE(created_at), '%Y-%m-%d') as job_date, 
            COUNT(*) as job_count
     FROM jobs 
     WHERE account_id = ? 
@@ -308,7 +308,7 @@ router.post('/recheck/:date', async (req: any, res: Response): Promise<void> => 
       SELECT j.*, COALESCE(gr.is_approved, 0) AS old_is_approved
       FROM jobs j
       LEFT JOIN gpt_responses gr ON j.id = gr.job_id AND gr.account_id = ?
-      WHERE j.account_id = ? AND DATE(j.created_at) = ?
+      WHERE j.account_id = ? AND DATE_FORMAT(DATE(j.created_at), '%Y-%m-%d') = ?
     `;
 
     connection.query(sql, [userId, userId, dateOnly], async (err: any, jobs: any[]) => {
