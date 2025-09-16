@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, OnDestroy} from '@angular/core';
 import {BotService} from '../../utils/data-acces/bot/bot.service';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {JobsService} from '../../utils/data-acces/jobs-service/jobs.service';
@@ -7,9 +7,10 @@ import {Log} from './utils/interfaces/log';
 import {DatePipe, CommonModule} from '@angular/common';
 import {SettingsStore} from '../../utils/state/settings/settings.state';
 import {UserStore} from '../../utils/state/user/user.state';
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom, Subscription} from 'rxjs';
 import { NgIconComponent } from '@ng-icons/core';
 import { BotStepperComponent } from '../../shared/components/bot-stepper/bot-stepper.component';
+import { WebsocketService } from '../../utils/data-acces/websocket/websocket.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,17 +29,20 @@ import { BotStepperComponent } from '../../shared/components/bot-stepper/bot-ste
 
 
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   settingsStore = inject(SettingsStore);
   userStore = inject(UserStore);
   botForm: FormGroup;
   showBotStepper = false;
+  isBotRunning = false;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private botService: BotService,
     private statsService: StatsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private websocketService: WebsocketService
   ) {
     this.botForm = this.fb.group({
       prompt: ['', Validators.required],
@@ -56,7 +60,15 @@ export class DashboardComponent implements OnInit {
           experience: settings.experience_level(),
           blockedKeywords: settings.blocked_keywords(),
         });
+      }
+    });
 
+    // Effect to handle user ID changes (for initial load)
+    effect(() => {
+      const userId = this.userStore.id();
+      if (userId !== 0 && !this.websocketService.isConnected()) {
+        this.initializeWebSocket();
+        this.checkBotStatus();
       }
     });
   }
@@ -113,9 +125,64 @@ export class DashboardComponent implements OnInit {
   activityLog: Log[] = [
   ];
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private initializeWebSocket() {
+    if (this.userStore.id() !== 0) {
+      this.websocketService.connect(this.userStore.id().toString());
+      
+      // Subscribe to bot status updates
+      this.subscriptions.push(
+        this.websocketService.botStatus$.subscribe(status => {
+          this.isBotRunning = status.isRunning;
+          this.showBotStepper = status.isRunning;
+        })
+      );
+
+      // Subscribe to bot completion to hide stepper
+      this.subscriptions.push(
+        this.websocketService.botComplete$.subscribe(() => {
+          this.isBotRunning = false;
+          // Keep stepper visible for a moment to show completion
+          setTimeout(() => {
+            this.showBotStepper = false;
+          }, 3000);
+        })
+      );
+
+      // Subscribe to bot errors to hide stepper
+      this.subscriptions.push(
+        this.websocketService.botError$.subscribe(() => {
+          this.isBotRunning = false;
+          // Keep stepper visible for a moment to show error
+          setTimeout(() => {
+            this.showBotStepper = false;
+          }, 5000);
+        })
+      );
+    }
+  }
+
+  private checkBotStatus() {
+    this.botService.getBotStatus().subscribe({
+      next: (status) => {
+        this.isBotRunning = status.isRunning;
+        this.showBotStepper = status.isRunning;
+      },
+      error: (error) => {
+        console.error('Error checking bot status:', error);
+      }
+    });
+  }
+
   onBotStart() {
-    this.showBotStepper = true;
-    firstValueFrom(this.botService.startBot()).then();
+    if (!this.isBotRunning) {
+      this.showBotStepper = true;
+      this.isBotRunning = true;
+      firstValueFrom(this.botService.startBot()).then();
+    }
   }
 
   onSettingsSave() {

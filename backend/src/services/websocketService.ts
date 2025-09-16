@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 
 export interface BotStage {
   stage: 'scraping' | 'analysis';
-  status: 'in_progress' | 'completed' | 'error';
+  status: 'in_progress' | 'done' | 'error';
   message?: string;
   progress?: {
     current: number;
@@ -28,9 +28,23 @@ export interface AnalysisStageUpdate {
 
 class WebSocketService {
   private io: Server | null = null;
+  private runningBots: Set<string> = new Set(); // Track running bots by userId
 
   setIO(io: Server) {
     this.io = io;
+  }
+
+  // Bot state management
+  setBotRunning(userId: string, isRunning: boolean) {
+    if (isRunning) {
+      this.runningBots.add(userId);
+    } else {
+      this.runningBots.delete(userId);
+    }
+  }
+
+  isBotRunning(userId: string): boolean {
+    return this.runningBots.has(userId);
   }
 
   // Emit bot stage updates to specific user
@@ -60,6 +74,7 @@ class WebSocketService {
   // Emit bot completion
   emitBotComplete(userId: string, summary: { newJobs: number; analyzedJobs: number; totalScraped: number }) {
     if (this.io) {
+      this.setBotRunning(userId, false); // Mark bot as not running
       this.io.to(`user-${userId}`).emit('bot-complete', summary);
       console.log(`Emitted bot completion to user ${userId}:`, summary);
     }
@@ -68,6 +83,7 @@ class WebSocketService {
   // Emit bot error
   emitBotError(userId: string, error: { message: string; stage?: string }) {
     if (this.io) {
+      this.setBotRunning(userId, false); // Mark bot as not running
       this.io.to(`user-${userId}`).emit('bot-error', error);
       console.log(`Emitted bot error to user ${userId}:`, error);
     }

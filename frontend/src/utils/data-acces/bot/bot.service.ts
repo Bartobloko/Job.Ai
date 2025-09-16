@@ -13,4 +13,8 @@ export class BotService {
   startBot() {
     return this.http.post('http://localhost:3000/api/bot/start', {});
   }
+
+  getBotStatus() {
+    return this.http.get<{ isRunning: boolean }>('http://localhost:3000/api/bot/status');
+  }
 }
