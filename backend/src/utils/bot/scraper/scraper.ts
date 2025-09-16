@@ -6,6 +6,7 @@ import { scrapeTheProtocol } from './utils/theprotocol';
 import { scrapeJustJoin } from './utils/justjoin';
 import { getAccountSettings, type AccountSettings } from './utils/utils';
 import { ScrapedJob } from '../../../types';
+import websocketService from '../../../services/websocketService';
 
 async function scrapeJobOffers(accountId: number): Promise<ScrapedJob[]> {
   // Get account settings including LinkedIn cookie and custom links
@@ -42,26 +43,91 @@ async function scrapeJobOffers(accountId: number): Promise<ScrapedJob[]> {
   const allJobDetails: ScrapedJob[] = [];
 
   // Scrape each site with custom links if available
+  
+  // JustJoin.it
+  websocketService.emitScrapingUpdate(accountId.toString(), {
+    site: 'JustJoin.it',
+    status: 'in_progress',
+    message: 'Starting to scrape JustJoin.it'
+  });
+  
   try {
     const justJoinJobs = await scrapeJustJoin(page, accountSettings.justJoin_links || null);
     allJobDetails.push(...justJoinJobs);
+    
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'JustJoin.it',
+      status: justJoinJobs.length > 0 ? 'done' : 'nothing_to_scrap',
+      message: `Found ${justJoinJobs.length} jobs`,
+      jobsFound: justJoinJobs.length
+    });
   } catch (error: any) {
     console.error('Error scraping JustJoin.it:', error.message);
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'JustJoin.it',
+      status: 'error',
+      message: `Error: ${error.message}`
+    });
   }
+
+  // TheProtocol.it
+  websocketService.emitScrapingUpdate(accountId.toString(), {
+    site: 'TheProtocol.it',
+    status: 'in_progress',
+    message: 'Starting to scrape TheProtocol.it'
+  });
 
   try {
     const protocolJobs = await scrapeTheProtocol(page, accountSettings.theProtocol_links || null);
     allJobDetails.push(...protocolJobs);
+    
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'TheProtocol.it',
+      status: protocolJobs.length > 0 ? 'done' : 'nothing_to_scrap',
+      message: `Found ${protocolJobs.length} jobs`,
+      jobsFound: protocolJobs.length
+    });
   } catch (error: any) {
     console.error('Error scraping TheProtocol.it:', error.message);
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'TheProtocol.it',
+      status: 'error',
+      message: `Error: ${error.message}`
+    });
   }
+
+  // NoFluffJobs
+  websocketService.emitScrapingUpdate(accountId.toString(), {
+    site: 'NoFluffJobs',
+    status: 'in_progress',
+    message: 'Starting to scrape NoFluffJobs'
+  });
 
   try {
     const noFluffJobs = await scrapeNoFluffJobs(page, accountSettings.noFluffJobs_links || null);
     allJobDetails.push(...noFluffJobs);
+    
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'NoFluffJobs',
+      status: noFluffJobs.length > 0 ? 'done' : 'nothing_to_scrap',
+      message: `Found ${noFluffJobs.length} jobs`,
+      jobsFound: noFluffJobs.length
+    });
   } catch (error: any) {
     console.error('Error scraping NoFluffJobs:', error.message);
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'NoFluffJobs',
+      status: 'error',
+      message: `Error: ${error.message}`
+    });
   }
+
+  // LinkedIn
+  websocketService.emitScrapingUpdate(accountId.toString(), {
+    site: 'LinkedIn',
+    status: 'in_progress',
+    message: 'Starting to scrape LinkedIn'
+  });
 
   try {
     const linkedInJobs = await scrapeLinkedInJobs(
@@ -70,15 +136,46 @@ async function scrapeJobOffers(accountId: number): Promise<ScrapedJob[]> {
       accountSettings.linkedIn_li_at_cookie || null
     );
     allJobDetails.push(...linkedInJobs);
+    
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'LinkedIn',
+      status: linkedInJobs.length > 0 ? 'done' : 'nothing_to_scrap',
+      message: `Found ${linkedInJobs.length} jobs`,
+      jobsFound: linkedInJobs.length
+    });
   } catch (error: any) {
     console.error('Error scraping LinkedIn Jobs:', error.message);
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'LinkedIn',
+      status: 'error',
+      message: `Error: ${error.message}`
+    });
   }
+
+  // Talent.com
+  websocketService.emitScrapingUpdate(accountId.toString(), {
+    site: 'Talent.com',
+    status: 'in_progress',
+    message: 'Starting to scrape Talent.com'
+  });
 
   try {
     const talentJobs = await scrapeTalentCom(page, accountSettings.talent_links || null);
     allJobDetails.push(...talentJobs);
+    
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'Talent.com',
+      status: talentJobs.length > 0 ? 'done' : 'nothing_to_scrap',
+      message: `Found ${talentJobs.length} jobs`,
+      jobsFound: talentJobs.length
+    });
   } catch (error: any) {
     console.error('Error scraping Talent.com:', error.message);
+    websocketService.emitScrapingUpdate(accountId.toString(), {
+      site: 'Talent.com',
+      status: 'error',
+      message: `Error: ${error.message}`
+    });
   }
 
   await browser.close();

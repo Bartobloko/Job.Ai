@@ -30,6 +30,12 @@
       </div>
     </div>
 
+    <!-- Bot Stepper -->
+    <app-bot-stepper 
+      [userId]="userStore.id().toString()" 
+      [isVisible]="showBotStepper">
+    </app-bot-stepper>
+
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2 animate-slide-up">
       <!-- Scrapped Jobs -->
