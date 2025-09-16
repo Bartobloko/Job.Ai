@@ -1,5 +1,5 @@
 <!-- Main Navigation -->
-<nav class="bg-white/90 backdrop-blur-md border-b border-gray-200/50 px-3 py-1 fixed left-0 right-0 top-0 z-50 shadow-soft">
+<nav class="bg-white/90 backdrop-blur-md border-b border-gray-200/50 px-3 py-2 fixed left-0 right-0 top-0 z-50 shadow-soft h-14">
   <div class="flex flex-wrap justify-between items-center">
     <!-- Logo and Brand -->
     <div class="flex items-center">
@@ -41,11 +41,11 @@
         <div class="relative ml-4 account-dropdown">
           <button
             type="button"
-            class="flex items-center py-2.5 px-4 text-sm font-medium text-secondary-700 rounded-xl hover:bg-secondary-50 transition-all duration-200 group border border-secondary-200"
+            class="flex items-center py-1.5 px-3 text-sm font-medium text-secondary-700 rounded-lg hover:bg-secondary-50 transition-all duration-200 group border border-secondary-200"
             (click)="toggleAccountDropdown()"
           >
-            <div class="w-8 h-8 mr-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
-              <ng-icon name="heroUser" class="w-4 h-4 text-white"></ng-icon>
+            <div class="w-6 h-6 mr-2 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+              <ng-icon name="heroUser" class="w-3 h-3 text-white"></ng-icon>
             </div>
             <span class="max-w-32 truncate">{{userStore.username()}}</span>
             <ng-icon 
@@ -156,7 +156,7 @@
 </nav>
 
 <!-- Spacer to prevent content from going under fixed navbar -->
-<div class="h-12"></div>
+<div class="h-14"></div>
 
 
 

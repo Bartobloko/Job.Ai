@@ -1,13 +1,13 @@
 <!-- Main Container -->
 <div class="min-h-noScroll bg-gradient-to-br from-secondary-50 to-primary-50/30 p-4">
-  <div class="max-w-4xl mx-auto space-y-4">
+  <div class="max-w-2xl mx-auto space-y-4">
 
     <!-- Header -->
     <div class="text-center animate-fade-in">
-      <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-large">
-        <ng-icon name="heroUser" class="w-6 h-6 text-white"></ng-icon>
+      <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mx-auto mb-3 shadow-medium">
+        <ng-icon name="heroUser" class="w-5 h-5 text-white"></ng-icon>
       </div>
-      <h1 class="text-xl font-bold bg-gradient-to-r from-secondary-900 to-primary-700 bg-clip-text text-transparent mb-2">
+      <h1 class="text-lg font-bold bg-gradient-to-r from-secondary-900 to-primary-700 bg-clip-text text-transparent mb-2">
         Welcome to Job.AI
       </h1>
       <p class="text-secondary-600 text-sm">Choose an account or create a new one to get started</p>
@@ -17,12 +17,12 @@
     @if (usersStore.users() && !accountCreation && usersStore.users().length > 0) {
       <div class="bg-white/80 backdrop-blur-sm border border-white/50 rounded-xl shadow-soft hover:shadow-medium transition-all duration-300 p-4 animate-slide-up">
         <div class="flex items-center mb-4">
-          <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mr-4">
-            <ng-icon name="heroUsers" class="w-5 h-5 text-white"></ng-icon>
+          <div class="w-7 h-7 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-3">
+            <ng-icon name="heroUsers" class="w-4 h-4 text-white"></ng-icon>
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-secondary-900">Select Account</h2>
-            <p class="text-secondary-600">Choose from your existing accounts</p>
+            <h2 class="text-lg font-bold text-secondary-900">Select Account</h2>
+            <p class="text-secondary-600 text-sm">Choose from your existing accounts</p>
           </div>
         </div>
 
@@ -31,15 +31,15 @@
           @for (user of usersStore.users(); track user.id) {
             <div class="group relative overflow-hidden bg-gradient-to-r from-white to-secondary-50/50 border border-secondary-200/50 rounded-2xl hover:shadow-soft transition-all duration-300 hover:scale-[1.02]">
               <!-- User Info (Clickable) -->
-              <div (click)="login(user.username)" class="flex items-center gap-4 p-6 cursor-pointer">
+              <div (click)="login(user.username)" class="flex items-center gap-3 p-4 cursor-pointer">
                 <!-- User Avatar -->
-                <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-medium group-hover:scale-110 transition-transform duration-300">
-                  <ng-icon name="heroUser" class="w-7 h-7 text-white"></ng-icon>
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-medium group-hover:scale-110 transition-transform duration-300">
+                  <ng-icon name="heroUser" class="w-5 h-5 text-white"></ng-icon>
                 </div>
 
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
-                  <div class="text-xl font-semibold text-secondary-900 group-hover:text-primary-700 transition-colors duration-300">
+                  <div class="text-lg font-semibold text-secondary-900 group-hover:text-primary-700 transition-colors duration-300">
                     {{ user.username }}
                   </div>
                   <div class="text-sm text-secondary-500">Click to sign in</div>
@@ -65,11 +65,11 @@
         <!-- Add Account Button -->
         <button
           (click)="accountCreation = !accountCreation"
-          class="group w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-2xl px-6 py-4 shadow-medium hover:shadow-large transition-all duration-300 transform hover:scale-[1.02]"
+          class="group w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-medium rounded-lg px-4 py-3 shadow-medium hover:shadow-large transition-all duration-300 transform hover:scale-[1.02]"
         >
           <div class="flex items-center justify-center">
-            <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center mr-3 group-hover:bg-white/30 transition-colors duration-300">
-              <ng-icon name="heroPlus" class="w-5 h-5"></ng-icon>
+            <div class="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center mr-2 group-hover:bg-white/30 transition-colors duration-300">
+              <ng-icon name="heroPlus" class="w-4 h-4"></ng-icon>
             </div>
             <span>Create New Account</span>
           </div>
@@ -87,11 +87,11 @@
           <div class="mt-6">
             <button
               (click)="accountCreation = false"
-              class="group w-full bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-2xl px-6 py-4 transition-all duration-300 transform hover:scale-[1.02] shadow-sm hover:shadow-medium"
+              class="group w-full bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-lg px-4 py-3 transition-all duration-300 transform hover:scale-[1.02] shadow-sm hover:shadow-medium"
             >
               <div class="flex items-center justify-center">
-                <div class="w-8 h-8 bg-secondary-200 group-hover:bg-secondary-300 rounded-xl flex items-center justify-center mr-3 transition-colors duration-300">
-                  <ng-icon name="heroArrowLeft" class="w-5 h-5"></ng-icon>
+                <div class="w-6 h-6 bg-secondary-200 group-hover:bg-secondary-300 rounded-lg flex items-center justify-center mr-2 transition-colors duration-300">
+                  <ng-icon name="heroArrowLeft" class="w-4 h-4"></ng-icon>
                 </div>
                 <span>Back to Account Selection</span>
               </div>
