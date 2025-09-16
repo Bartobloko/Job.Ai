@@ -9,6 +9,9 @@
       <p class="text-secondary-600 text-sm">Discover and manage your job opportunities</p>
     </div>
 
+    <!-- Recheck Jobs Section -->
+    <app-job-recheck (recheckComplete)="onRecheckComplete($event)"></app-job-recheck>
+
     <!-- Search and Filter Controls -->
     <div class="bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg shadow-soft p-3 animate-slide-up">
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -322,3 +325,11 @@
     }
   </div>
 </div>
+
+<!-- Job Status Popup -->
+<app-job-status-popup 
+  [isVisible]="showStatusPopup"
+  [changedJobs]="recheckResult?.changedJobs || []"
+  [totalJobs]="recheckResult?.totalJobs || 0"
+  (close)="onCloseStatusPopup()">
+</app-job-status-popup>
