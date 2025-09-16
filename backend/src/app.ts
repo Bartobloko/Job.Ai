@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
+// Load environment variables at the very beginning
+dotenv.config();
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Create HTTP server
 const server = createServer(app);
