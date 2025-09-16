@@ -70,7 +70,7 @@ router.get('/', decodeJWT, (req: any, res: Response): void => {
 });
 
 // PUT: Update account settings
-router.put('/', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.put('/', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const {
     first_name,

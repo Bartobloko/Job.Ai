@@ -8,7 +8,7 @@ import {UserStore} from '../../utils/state/user/user.state';
 import {Subscription} from 'rxjs';
 import { NgIconComponent } from '@ng-icons/core';
 import { ProfilesStore } from '../../utils/state/profiles/profiles.state';
-import { BotProfile } from '../../utils/interfaces/profile';
+import { BotProfile } from '../../utils/data-acces/profiles/profiles.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -77,9 +77,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const selectedProfile = this.profilesStore.selectedProfile();
       if (selectedProfile) {
         this.botForm.patchValue({
-          prompt: selectedProfile.prompt,
-          experience: selectedProfile.experience,
-          blockedKeywords: selectedProfile.blockedKeywords,
+          prompt: selectedProfile.custom_prompt,
+          experience: selectedProfile.experience_level,
+          blockedKeywords: selectedProfile.blocked_keywords,
         });
       }
     });
@@ -158,9 +158,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (profile) {
       this.profileForm.patchValue({
         name: profile.name,
-        prompt: profile.prompt,
-        experience: profile.experience,
-        blockedKeywords: profile.blockedKeywords
+        prompt: profile.custom_prompt,
+        experience: profile.experience_level,
+        blockedKeywords: profile.blocked_keywords
       });
     } else {
       // Pre-fill with current form values when creating new profile
@@ -184,23 +184,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.profileForm.valid) {
       const profileData = {
         name: this.profileForm.get('name')?.value,
-        prompt: this.profileForm.get('prompt')?.value,
-        experience: this.profileForm.get('experience')?.value,
-        blockedKeywords: this.profileForm.get('blockedKeywords')?.value
+        custom_prompt: this.profileForm.get('prompt')?.value,
+        experience_level: this.profileForm.get('experience')?.value,
+        blocked_keywords: this.profileForm.get('blockedKeywords')?.value
       };
 
       if (this.editingProfile) {
         // Update existing profile
-        const success = await this.profilesStore.updateProfile(this.editingProfile.id, profileData);
-        if (success) {
-          this.closeProfileModal();
-        }
+        await this.profilesStore.updateProfile(this.editingProfile.id, profileData);
+        this.closeProfileModal();
       } else {
         // Create new profile
-        const newProfileId = await this.profilesStore.createProfile(profileData);
-        if (newProfileId) {
-          this.closeProfileModal();
-        }
+        await this.profilesStore.createProfile(profileData);
+        this.closeProfileModal();
       }
     }
   }
@@ -213,9 +209,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   loadProfile(profile: BotProfile): void {
     this.botForm.patchValue({
-      prompt: profile.prompt,
-      experience: profile.experience,
-      blockedKeywords: profile.blockedKeywords
+      prompt: profile.custom_prompt,
+      experience: profile.experience_level,
+      blockedKeywords: profile.blocked_keywords
     });
     this.profilesStore.selectProfile(profile.id);
   }

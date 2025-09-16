@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { BotProfile, CreateProfileRequest, UpdateProfileRequest } from '../../interfaces/profile';
+import { BotProfile, CreateProfileRequest, UpdateProfileRequest } from '../profiles/profiles.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class ProfileService {
     return of(profiles);
   }
 
-  getProfile(id: string): Observable<BotProfile | null> {
+  getProfile(id: number): Observable<BotProfile | null> {
     const profiles = this.getProfilesFromStorage();
     const profile = profiles.find(p => p.id === id) || null;
     return of(profile);
@@ -29,9 +29,15 @@ export class ProfileService {
     // For now, use fake route - will be implemented later
     const newProfile: BotProfile = {
       id: this.generateId(),
-      ...profileData,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      account_id: 1, // Mock account ID
+      name: profileData.name,
+      custom_prompt: profileData.custom_prompt,
+      experience_level: profileData.experience_level,
+      blocked_keywords: profileData.blocked_keywords,
+      ai_model: profileData.ai_model || 'phi4',
+      is_active: false,
+      created_at: new Date(),
+      updated_at: new Date()
     };
 
     const profiles = this.getProfilesFromStorage();
@@ -41,16 +47,21 @@ export class ProfileService {
     return of(newProfile);
   }
 
-  updateProfile(profileData: UpdateProfileRequest): Observable<BotProfile> {
+  updateProfile(id: number, profileData: UpdateProfileRequest): Observable<BotProfile> {
     // For now, use fake route - will be implemented later
     const profiles = this.getProfilesFromStorage();
-    const index = profiles.findIndex(p => p.id === profileData.id);
+    const index = profiles.findIndex(p => p.id === id);
     
     if (index !== -1) {
       const updatedProfile: BotProfile = {
         ...profiles[index],
-        ...profileData,
-        updatedAt: new Date()
+        name: profileData.name,
+        custom_prompt: profileData.custom_prompt,
+        experience_level: profileData.experience_level,
+        blocked_keywords: profileData.blocked_keywords,
+        ai_model: profileData.ai_model || profiles[index].ai_model,
+        is_active: profileData.is_active !== undefined ? profileData.is_active : profiles[index].is_active,
+        updated_at: new Date()
       };
       profiles[index] = updatedProfile;
       this.saveProfilesToStorage(profiles);
@@ -60,7 +71,7 @@ export class ProfileService {
     throw new Error('Profile not found');
   }
 
-  deleteProfile(id: string): Observable<boolean> {
+  deleteProfile(id: number): Observable<boolean> {
     // For now, use fake route - will be implemented later
     const profiles = this.getProfilesFromStorage();
     const filteredProfiles = profiles.filter(p => p.id !== id);
@@ -85,7 +96,7 @@ export class ProfileService {
     }
   }
 
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  private generateId(): number {
+    return Date.now() + Math.floor(Math.random() * 1000);
   }
 }

@@ -6,6 +6,7 @@ import { ProfilesService, BotProfile, CreateProfileRequest, UpdateProfileRequest
 interface ProfilesState {
   profiles: BotProfile[];
   activeProfile: BotProfile | null;
+  selectedProfileId: number | null;
   loading: boolean;
   error: string | null;
 }
@@ -13,6 +14,7 @@ interface ProfilesState {
 const initialState: ProfilesState = {
   profiles: [],
   activeProfile: null,
+  selectedProfileId: null,
   loading: false,
   error: null
 };
@@ -121,6 +123,10 @@ export const ProfilesStore = signalStore(
         }
       },
 
+      selectProfile(profileId: number | null) {
+        patchState(store, { selectedProfileId: profileId });
+      },
+
       clearError() {
         patchState(store, { error: null });
       }
@@ -129,6 +135,10 @@ export const ProfilesStore = signalStore(
   withComputed((state) => ({
     hasProfiles: computed(() => state.profiles().length > 0),
     hasActiveProfile: computed(() => state.activeProfile() !== null),
-    profilesCount: computed(() => state.profiles().length)
+    profilesCount: computed(() => state.profiles().length),
+    selectedProfile: computed(() => {
+      const profileId = state.selectedProfileId();
+      return profileId ? state.profiles().find(p => p.id === profileId) || null : null;
+    })
   }))
 );

@@ -1,20 +1,24 @@
 export interface BotProfile {
-  id: string;
+  id: number;
+  account_id: number;
   name: string;
-  prompt: string;
-  experience: string;
-  blockedKeywords: string;
-  createdAt: Date;
-  updatedAt: Date;
+  custom_prompt: string;
+  experience_level: string;
+  blocked_keywords: string;
+  ai_model: string;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface CreateProfileRequest {
   name: string;
-  prompt: string;
-  experience: string;
-  blockedKeywords: string;
+  custom_prompt: string;
+  experience_level: string;
+  blocked_keywords: string;
+  ai_model?: string;
 }
 
 export interface UpdateProfileRequest extends CreateProfileRequest {
-  id: string;
+  is_active?: boolean;
 }

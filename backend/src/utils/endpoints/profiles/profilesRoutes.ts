@@ -3,6 +3,7 @@ import { connection } from '../../database/database';
 import decodeJWT from '../../middleware/decodeJWT';
 import { AuthenticatedRequest } from '../../../types';
 import profileTestingRoutes from './profileTestingRoutes';
+import { RowDataPacket } from 'mysql2';
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ interface UpdateProfileBody extends CreateProfileBody {
 }
 
 // CREATE: Add a new bot profile
-router.post('/', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.post('/', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const { name, custom_prompt, experience_level, blocked_keywords, ai_model = 'phi4' }: CreateProfileBody = req.body;
 
@@ -58,25 +59,25 @@ router.post('/', decodeJWT, (req: AuthenticatedRequest, res: Response): void => 
 });
 
 // READ: Get all profiles for the authenticated user
-router.get('/', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.get('/', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
 
   const sql = "SELECT * FROM bot_profiles WHERE account_id = ? ORDER BY created_at DESC";
-  connection.query(sql, [accountId], (err: any, results: BotProfile[]) => {
+  connection.query(sql, [accountId], (err: any, results: RowDataPacket[]) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.status(200).json(results);
+    res.status(200).json(results as BotProfile[]);
   });
 });
 
 // READ: Get active profile for the authenticated user
-router.get('/active', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.get('/active', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
 
   const sql = "SELECT * FROM bot_profiles WHERE account_id = ? AND is_active = true LIMIT 1";
-  connection.query(sql, [accountId], (err: any, results: BotProfile[]) => {
+  connection.query(sql, [accountId], (err: any, results: RowDataPacket[]) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -87,17 +88,17 @@ router.get('/active', decodeJWT, (req: AuthenticatedRequest, res: Response): voi
       return;
     }
     
-    res.status(200).json(results[0]);
+    res.status(200).json(results[0] as BotProfile);
   });
 });
 
 // READ: Get a single profile by ID
-router.get('/:profile_id', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.get('/:profile_id', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const { profile_id } = req.params;
 
   const sql = "SELECT * FROM bot_profiles WHERE id = ? AND account_id = ?";
-  connection.query(sql, [profile_id, accountId], (err: any, results: BotProfile[]) => {
+  connection.query(sql, [profile_id, accountId], (err: any, results: RowDataPacket[]) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -108,12 +109,12 @@ router.get('/:profile_id', decodeJWT, (req: AuthenticatedRequest, res: Response)
       return;
     }
     
-    res.status(200).json(results[0]);
+    res.status(200).json(results[0] as BotProfile);
   });
 });
 
 // UPDATE: Update a profile by ID
-router.put('/:profile_id', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.put('/:profile_id', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const { profile_id } = req.params;
   const { name, custom_prompt, experience_level, blocked_keywords, ai_model, is_active }: UpdateProfileBody = req.body;
@@ -155,7 +156,7 @@ router.put('/:profile_id', decodeJWT, (req: AuthenticatedRequest, res: Response)
 });
 
 // POST: Set a profile as active
-router.post('/:profile_id/activate', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.post('/:profile_id/activate', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const { profile_id } = req.params;
 
@@ -186,7 +187,7 @@ router.post('/:profile_id/activate', decodeJWT, (req: AuthenticatedRequest, res:
 });
 
 // DELETE: Delete a profile by ID
-router.delete('/:profile_id', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.delete('/:profile_id', decodeJWT, (req: any, res: Response): void => {
   const { id: accountId } = req.user;
   const { profile_id } = req.params;
 

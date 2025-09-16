@@ -9,6 +9,9 @@ export interface Settings {
   noFluffJobs_links: string | null;
   linkedIn_links: string | null;
   talent_links: string | null;
+  custom_prompt: string | null;
+  experience_level: string | null;
+  blocked_keywords: string | null;
   updated_at: string;
 }
 

@@ -15,6 +15,9 @@ const initialState: Settings = {
   noFluffJobs_links: null,
   linkedIn_links: null,
   talent_links: null,
+  custom_prompt: null,
+  experience_level: null,
+  blocked_keywords: null,
   updated_at: ''
 }
 
@@ -38,6 +41,9 @@ export const SettingsStore = signalStore(
           noFluffJobs_links: settings.noFluffJobs_links,
           linkedIn_links: settings.linkedIn_links,
           talent_links: settings.talent_links,
+          custom_prompt: settings.custom_prompt,
+          experience_level: settings.experience_level,
+          blocked_keywords: settings.blocked_keywords,
           updated_at: settings.updated_at
         });
         console.log('loaded settings', settings);
@@ -55,6 +61,9 @@ export const SettingsStore = signalStore(
           noFluffJobs_links: store.noFluffJobs_links(),
           linkedIn_links: store.linkedIn_links(),
           talent_links: store.talent_links(),
+          custom_prompt: store.custom_prompt(),
+          experience_level: store.experience_level(),
+          blocked_keywords: store.blocked_keywords(),
           updated_at: store.updated_at()
         };
 
@@ -72,6 +81,11 @@ export const SettingsStore = signalStore(
     }),
     hasIntegrationSettings: computed(() => {
       return !!(state.linkedIn_li_at_cookie() || state.justJoin_links() || state.theProtocol_links() || state.noFluffJobs_links() || state.linkedIn_links() || state.talent_links());
-    })
+    }),
+    shortSettings: computed(() => ({
+      custom_prompt: () => state.custom_prompt(),
+      experience_level: () => state.experience_level(),
+      blocked_keywords: () => state.blocked_keywords()
+    }))
   }))
 );

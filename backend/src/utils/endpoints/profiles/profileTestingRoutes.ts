@@ -25,7 +25,7 @@ interface TestResponse {
 }
 
 // POST: Test a profile against all fake jobs
-router.post('/test/:profile_id', decodeJWT, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+router.post('/test/:profile_id', decodeJWT, async (req: any, res: Response): Promise<void> => {
   const { id: accountId } = req.user;
   const { profile_id } = req.params;
 
@@ -106,7 +106,7 @@ router.post('/test/:profile_id', decodeJWT, async (req: AuthenticatedRequest, re
 });
 
 // GET: Get all fake jobs (for frontend to display/manage)
-router.get('/fake-jobs', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.get('/fake-jobs', decodeJWT, (req: any, res: Response): void => {
   const sql = "SELECT fake_job_id as id, fake_job_description as description FROM fake_jobs ORDER BY fake_job_id";
   connection.query(sql, (err: any, results: any[]) => {
     if (err) {
@@ -118,7 +118,7 @@ router.get('/fake-jobs', decodeJWT, (req: AuthenticatedRequest, res: Response): 
 });
 
 // POST: Add a new fake job for testing
-router.post('/fake-jobs', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.post('/fake-jobs', decodeJWT, (req: any, res: Response): void => {
   const { description } = req.body;
 
   if (!description || description.trim() === '') {
@@ -142,7 +142,7 @@ router.post('/fake-jobs', decodeJWT, (req: AuthenticatedRequest, res: Response):
 });
 
 // DELETE: Remove a fake job
-router.delete('/fake-jobs/:job_id', decodeJWT, (req: AuthenticatedRequest, res: Response): void => {
+router.delete('/fake-jobs/:job_id', decodeJWT, (req: any, res: Response): void => {
   const { job_id } = req.params;
 
   const sql = "DELETE FROM fake_jobs WHERE fake_job_id = ?";
