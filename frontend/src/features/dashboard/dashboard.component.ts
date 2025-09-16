@@ -6,8 +6,10 @@ import {StatsService} from './utils/stats-service/stats.service';
 import {Log} from './utils/interfaces/log';
 import {DatePipe, CommonModule} from '@angular/common';
 import {SettingsStore} from '../../utils/state/settings/settings.state';
+import {UserStore} from '../../utils/state/user/user.state';
 import {firstValueFrom} from 'rxjs';
 import { NgIconComponent } from '@ng-icons/core';
+import { BotStepperComponent } from '../../shared/components/bot-stepper/bot-stepper.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +18,8 @@ import { NgIconComponent } from '@ng-icons/core';
     DatePipe,
     ReactiveFormsModule,
     NgIconComponent,
-    CommonModule
+    CommonModule,
+    BotStepperComponent
   ],
   templateUrl: './dashboard.component.html',
   standalone: true,
@@ -27,9 +30,10 @@ import { NgIconComponent } from '@ng-icons/core';
 
 export class DashboardComponent implements OnInit {
 
-
   settingsStore = inject(SettingsStore);
+  userStore = inject(UserStore);
   botForm: FormGroup;
+  showBotStepper = false;
 
   constructor(
     private botService: BotService,
@@ -58,6 +62,11 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Load user if not already loaded
+    if (this.userStore.id() === 0) {
+      this.userStore.loadUser();
+    }
+    
     this.statsService.getJobSummary().subscribe({
       next: (summary) => {
         this.stats.appliedJobs = summary.appliedJobs;
@@ -105,6 +114,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   onBotStart() {
+    this.showBotStepper = true;
     firstValueFrom(this.botService.startBot()).then();
   }
 

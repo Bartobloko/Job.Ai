@@ -1,14 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SettingsStore } from '../../utils/state/settings/settings.state';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
-    DatePipe
+    ReactiveFormsModule
   ],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
