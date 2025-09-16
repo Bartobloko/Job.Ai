@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { JobsService, RecheckResult } from '../../utils/data-acces/jobs-service/jobs.service';
-import {DatePipe, SlicePipe, CommonModule} from '@angular/common';
+import { DatePipe, SlicePipe, CommonModule } from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Job} from '../../utils/interfaces/job';
 import { NgIconComponent } from '@ng-icons/core';
@@ -22,6 +22,8 @@ import { JobStatusPopupComponent } from '../../shared/components/job-status-popu
     styleUrls: ['./jobs-table.component.scss']
 })
 export class JobsTableComponent implements OnInit {
+  private jobsService = inject(JobsService);
+
   columns = ['is_approved', 'createdAt', 'title', 'description', 'company', 'link'];
   sortColumn = 'createdAt';
   sortDirection: 'asc' | 'desc' = 'desc';
@@ -37,8 +39,6 @@ export class JobsTableComponent implements OnInit {
   // Popup state
   showStatusPopup: boolean = false;
   recheckResult: RecheckResult | null = null;
-
-  constructor(private jobsService: JobsService) {}
 
   ngOnInit(): void {
     this.jobsService.getJobOffers().subscribe({

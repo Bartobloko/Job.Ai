@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Router} from '@angular/router';
 import {UserService} from '../../../../utils/data-acces/user/user.service';
@@ -13,6 +13,9 @@ import {UserService} from '../../../../utils/data-acces/user/user.service';
     styleUrl: './account-create-form.component.scss'
 })
 export class AccountCreateFormComponent {
+  private router = inject(Router);
+  private userService = inject(UserService);
+
   currentStep = 1;
 
   formData: SetupForm = {
@@ -27,10 +30,6 @@ export class AccountCreateFormComponent {
     linkedIn_li_at_cookie: '',
     ai_model: 'phi4'
   };
-
-  constructor(
-    private router: Router,
-    private userService: UserService) {}
 
 
   nextStep() {

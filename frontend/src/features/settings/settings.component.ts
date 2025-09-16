@@ -12,10 +12,12 @@ import { SettingsStore } from '../../utils/state/settings/settings.state';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
+  private fb = inject(FormBuilder);
+
   settingsForm: FormGroup;
   settingsStore = inject(SettingsStore);
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.settingsForm = this.fb.group({
       // Bot settings (from dashboard)
       prompt: ['', Validators.required],

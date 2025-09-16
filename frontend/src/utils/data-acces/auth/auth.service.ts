@@ -8,14 +8,12 @@ import {UserStore} from '../../state/user/user.state';
   providedIn: 'root'
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private cookieService = inject(CookieService);
+
 
   private tokenKey = 'authToken';
-
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private cookieService: CookieService
-  ) { }
 
   getUser() {
     return this.http.get<{ id: number, username: string, created_At: Date }>('http://localhost:3000/api/users/me');

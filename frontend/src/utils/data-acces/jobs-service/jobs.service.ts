@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Job} from '../../interfaces/job';
 import {JobSummary} from '../../interfaces/job-summary';
@@ -27,10 +27,8 @@ export interface RecheckResult {
   providedIn: 'root'
 })
 export class JobsService {
+  private http = inject(HttpClient);
 
-  constructor(
-    private http: HttpClient
-  ) { }
 
   getJobOffers() {
     return this.http.get<Job[]>('http://localhost:3000/api/jobs');

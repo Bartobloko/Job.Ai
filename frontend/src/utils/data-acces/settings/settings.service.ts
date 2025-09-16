@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../auth/auth.service';
 import {Settings} from '../../interfaces/settings';
@@ -7,10 +7,8 @@ import {Settings} from '../../interfaces/settings';
   providedIn: 'root'
 })
 export class SettingsService {
+  private http = inject(HttpClient);
 
-  constructor(
-    private http: HttpClient,
-  ) { }
 
 
   getAccountSettings() {

@@ -1,149 +1,158 @@
 <!-- Bot Stepper Container -->
-<div *ngIf="isVisible" class="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-soft p-4 mb-4">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center">
-      <div class="w-6 h-6 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-3">
-        <ng-icon name="heroCog6Tooth" class="w-3 h-3 text-white"></ng-icon>
-      </div>
-      <div>
-        <h5 class="text-base font-bold text-secondary-900">Bot Execution Progress</h5>
-        <p class="text-xs text-secondary-600">Real-time bot activity tracking</p>
-      </div>
-    </div>
-    
-    <!-- Reset Button (only show when completed or error) -->
-    <button 
-      *ngIf="isCompleted || hasError"
-      (click)="resetStepper()"
-      class="text-xs bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-lg px-3 py-1.5 transition-all duration-200 hover:scale-105">
-      <ng-icon name="heroArrowPath" class="w-3 h-3 mr-1 inline"></ng-icon>
-      Reset
-    </button>
-  </div>
-
-  <!-- Stepper Steps -->
-  <div class="space-y-4">
-    <div *ngFor="let step of steps; let i = index" class="relative">
-      <!-- Main Step -->
-      <div class="flex items-start">
-        <!-- Step Icon -->
-        <div class="flex-shrink-0 relative">
-          <div [class]="'w-8 h-8 rounded-full flex items-center justify-center ' + getStepStatusClass(step.status)">
-            <ng-icon 
-              [name]="getStepIcon(step.status)" 
-              class="w-4 h-4"
-              [class.animate-spin]="step.status === 'in_progress' && getStepIcon(step.status) === 'heroArrowPath'">
-            </ng-icon>
-          </div>
-          
-          <!-- Connector Line -->
-          <div 
-            *ngIf="i < steps.length - 1"
-            class="absolute top-8 left-4 w-0.5 h-6 bg-secondary-200 transform -translate-x-0.5">
-          </div>
+@if (isVisible()) {
+  <div class="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-soft p-4 mb-4">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <div class="w-6 h-6 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-3">
+          <ng-icon name="heroCog6Tooth" class="w-3 h-3 text-white"></ng-icon>
         </div>
-
-        <!-- Step Content -->
-        <div class="ml-4 flex-1">
-          <div class="flex items-center justify-between">
-            <h6 class="text-sm font-semibold text-secondary-900">{{ step.label }}</h6>
-            <span 
-              *ngIf="step.status !== 'pending'"
-              [class]="'text-xs px-2 py-1 rounded-full font-medium ' + getStepStatusClass(step.status)">
-              {{ step.status === 'in_progress' ? 'In Progress' : 
-                 step.status === 'done' ? 'Completed' : 
-                 step.status === 'error' ? 'Error' : 'Pending' }}
-            </span>
-          </div>
-          
-          <!-- Step Message -->
-          <p *ngIf="step.message" class="text-xs text-secondary-600 mt-1">{{ step.message }}</p>
-
-          <!-- Progress Bar for Analysis -->
-          <div *ngIf="step.id === 'analysis' && step.status === 'in_progress' && currentProgress.total > 0" 
-               class="mt-2">
-            <div class="flex items-center justify-between text-xs text-secondary-600 mb-1">
-              <span>Analyzing jobs</span>
-              <span>{{ currentProgress.current }}/{{ currentProgress.total }} ({{ getProgressPercentage() }}%)</span>
-            </div>
-            <div class="w-full bg-secondary-200 rounded-full h-2">
-              <div 
-                class="bg-gradient-to-r from-primary-500 to-primary-600 h-2 rounded-full transition-all duration-300"
-                [style.width.%]="getProgressPercentage()">
+        <div>
+          <h5 class="text-base font-bold text-secondary-900">Bot Execution Progress</h5>
+          <p class="text-xs text-secondary-600">Real-time bot activity tracking</p>
+        </div>
+      </div>
+      <!-- Reset Button (only show when completed or error) -->
+      @if (isCompleted || hasError) {
+        <button
+          (click)="resetStepper()"
+          class="text-xs bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium rounded-lg px-3 py-1.5 transition-all duration-200 hover:scale-105">
+          <ng-icon name="heroArrowPath" class="w-3 h-3 mr-1 inline"></ng-icon>
+          Reset
+        </button>
+      }
+    </div>
+    <!-- Stepper Steps -->
+    <div class="space-y-4">
+      @for (step of steps; track step; let i = $index) {
+        <div class="relative">
+          <!-- Main Step -->
+          <div class="flex items-start">
+            <!-- Step Icon -->
+            <div class="flex-shrink-0 relative">
+              <div [class]="'w-8 h-8 rounded-full flex items-center justify-center ' + getStepStatusClass(step.status)">
+                <ng-icon
+                  [name]="getStepIcon(step.status)"
+                  class="w-4 h-4"
+                  [class.animate-spin]="step.status === 'in_progress' && getStepIcon(step.status) === 'heroArrowPath'">
+                </ng-icon>
               </div>
-            </div>
-          </div>
-
-          <!-- Sub-steps for Scraping -->
-          <div *ngIf="step.subSteps && step.subSteps.length > 0" class="mt-3 space-y-2">
-            <div *ngFor="let subStep of step.subSteps" class="flex items-center justify-between bg-secondary-50/50 rounded-lg p-2">
-              <div class="flex items-center">
-                <div [class]="'w-4 h-4 rounded-full flex items-center justify-center mr-2 ' + getStepStatusClass(subStep.status)">
-                  <ng-icon 
-                    [name]="getStepIcon(subStep.status)" 
-                    class="w-2 h-2"
-                    [class.animate-spin]="subStep.status === 'in_progress' && getStepIcon(subStep.status) === 'heroArrowPath'">
-                  </ng-icon>
+              <!-- Connector Line -->
+              @if (i < steps.length - 1) {
+                <div
+                  class="absolute top-8 left-4 w-0.5 h-6 bg-secondary-200 transform -translate-x-0.5">
                 </div>
-                <span class="text-xs font-medium text-secondary-700">{{ subStep.label }}</span>
+              }
+            </div>
+            <!-- Step Content -->
+            <div class="ml-4 flex-1">
+              <div class="flex items-center justify-between">
+                <h6 class="text-sm font-semibold text-secondary-900">{{ step.label }}</h6>
+                @if (step.status !== 'pending') {
+                  <span
+                    [class]="'text-xs px-2 py-1 rounded-full font-medium ' + getStepStatusClass(step.status)">
+                    {{ step.status === 'in_progress' ? 'In Progress' :
+                    step.status === 'done' ? 'Completed' :
+                    step.status === 'error' ? 'Error' : 'Pending' }}
+                  </span>
+                }
               </div>
-              
-              <div class="flex items-center space-x-2">
-                <!-- Jobs Found Badge -->
-                <span 
-                  *ngIf="subStep.jobsFound !== undefined"
-                  class="text-xs bg-success-100 text-success-700 px-2 py-0.5 rounded-full font-medium">
-                  {{ subStep.jobsFound }} jobs
-                </span>
-                
-                <!-- Status Badge -->
-                <span 
-                  [class]="'text-xs px-2 py-0.5 rounded-full font-medium ' + getSubStepStatusClass(subStep.status)">
-                  {{ subStep.status === 'in_progress' ? 'Scraping...' : 
-                     subStep.status === 'done' ? 'Done' : 
-                     subStep.status === 'error' ? 'Error' : 
-                     subStep.status === 'nothing_to_scrap' ? 'No jobs' : 'Waiting' }}
-                </span>
-              </div>
+              <!-- Step Message -->
+              @if (step.message) {
+                <p class="text-xs text-secondary-600 mt-1">{{ step.message }}</p>
+              }
+              <!-- Progress Bar for Analysis -->
+              @if (step.id === 'analysis' && step.status === 'in_progress' && currentProgress.total > 0) {
+                <div
+                  class="mt-2">
+                  <div class="flex items-center justify-between text-xs text-secondary-600 mb-1">
+                    <span>Analyzing jobs</span>
+                    <span>{{ currentProgress.current }}/{{ currentProgress.total }} ({{ getProgressPercentage() }}%)</span>
+                  </div>
+                  <div class="w-full bg-secondary-200 rounded-full h-2">
+                    <div
+                      class="bg-gradient-to-r from-primary-500 to-primary-600 h-2 rounded-full transition-all duration-300"
+                      [style.width.%]="getProgressPercentage()">
+                    </div>
+                  </div>
+                </div>
+              }
+              <!-- Sub-steps for Scraping -->
+              @if (step.subSteps && step.subSteps.length > 0) {
+                <div class="mt-3 space-y-2">
+                  @for (subStep of step.subSteps; track subStep) {
+                    <div class="flex items-center justify-between bg-secondary-50/50 rounded-lg p-2">
+                      <div class="flex items-center">
+                        <div [class]="'w-4 h-4 rounded-full flex items-center justify-center mr-2 ' + getStepStatusClass(subStep.status)">
+                          <ng-icon
+                            [name]="getStepIcon(subStep.status)"
+                            class="w-2 h-2"
+                            [class.animate-spin]="subStep.status === 'in_progress' && getStepIcon(subStep.status) === 'heroArrowPath'">
+                          </ng-icon>
+                        </div>
+                        <span class="text-xs font-medium text-secondary-700">{{ subStep.label }}</span>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <!-- Jobs Found Badge -->
+                        @if (subStep.jobsFound !== undefined) {
+                          <span
+                            class="text-xs bg-success-100 text-success-700 px-2 py-0.5 rounded-full font-medium">
+                            {{ subStep.jobsFound }} jobs
+                          </span>
+                        }
+                        <!-- Status Badge -->
+                        <span
+                          [class]="'text-xs px-2 py-0.5 rounded-full font-medium ' + getSubStepStatusClass(subStep.status)">
+                          {{ subStep.status === 'in_progress' ? 'Scraping...' :
+                          subStep.status === 'done' ? 'Done' :
+                          subStep.status === 'error' ? 'Error' :
+                          subStep.status === 'nothing_to_scrap' ? 'No jobs' : 'Waiting' }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
+    <!-- Completion Summary -->
+    @if (isCompleted && completionSummary) {
+      <div
+        class="mt-4 p-3 bg-gradient-to-r from-success-50 to-success-100/50 rounded-lg border border-success-200/50">
+        <div class="flex items-center mb-2">
+          <ng-icon name="heroCheckCircle" class="w-5 h-5 text-success-600 mr-2"></ng-icon>
+          <h6 class="text-sm font-semibold text-success-800">Bot Execution Complete!</h6>
+        </div>
+        <div class="grid grid-cols-3 gap-4 text-xs">
+          <div class="text-center">
+            <div class="font-bold text-success-700">{{ completionSummary.totalScraped }}</div>
+            <div class="text-success-600">Total Scraped</div>
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-success-700">{{ completionSummary.newJobs }}</div>
+            <div class="text-success-600">New Jobs</div>
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-success-700">{{ completionSummary.analyzedJobs }}</div>
+            <div class="text-success-600">Analyzed</div>
+          </div>
+        </div>
+      </div>
+    }
+    <!-- Error Summary -->
+    @if (hasError) {
+      <div
+        class="mt-4 p-3 bg-gradient-to-r from-danger-50 to-danger-100/50 rounded-lg border border-danger-200/50">
+        <div class="flex items-center">
+          <ng-icon name="heroExclamationTriangle" class="w-5 h-5 text-danger-600 mr-2"></ng-icon>
+          <div>
+            <h6 class="text-sm font-semibold text-danger-800">Bot Execution Error</h6>
+            <p class="text-xs text-danger-600">Some steps encountered errors. Check the logs for more details.</p>
+          </div>
+        </div>
+      </div>
+    }
   </div>
-
-  <!-- Completion Summary -->
-  <div *ngIf="isCompleted && completionSummary" 
-       class="mt-4 p-3 bg-gradient-to-r from-success-50 to-success-100/50 rounded-lg border border-success-200/50">
-    <div class="flex items-center mb-2">
-      <ng-icon name="heroCheckCircle" class="w-5 h-5 text-success-600 mr-2"></ng-icon>
-      <h6 class="text-sm font-semibold text-success-800">Bot Execution Complete!</h6>
-    </div>
-    <div class="grid grid-cols-3 gap-4 text-xs">
-      <div class="text-center">
-        <div class="font-bold text-success-700">{{ completionSummary.totalScraped }}</div>
-        <div class="text-success-600">Total Scraped</div>
-      </div>
-      <div class="text-center">
-        <div class="font-bold text-success-700">{{ completionSummary.newJobs }}</div>
-        <div class="text-success-600">New Jobs</div>
-      </div>
-      <div class="text-center">
-        <div class="font-bold text-success-700">{{ completionSummary.analyzedJobs }}</div>
-        <div class="text-success-600">Analyzed</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Error Summary -->
-  <div *ngIf="hasError" 
-       class="mt-4 p-3 bg-gradient-to-r from-danger-50 to-danger-100/50 rounded-lg border border-danger-200/50">
-    <div class="flex items-center">
-      <ng-icon name="heroExclamationTriangle" class="w-5 h-5 text-danger-600 mr-2"></ng-icon>
-      <div>
-        <h6 class="text-sm font-semibold text-danger-800">Bot Execution Error</h6>
-        <p class="text-xs text-danger-600">Some steps encountered errors. Check the logs for more details.</p>
-      </div>
-    </div>
-  </div>
-</div>
+}

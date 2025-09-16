@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthService} from '../auth/auth.service';
 import {User} from '../../interfaces/user';
@@ -8,11 +8,9 @@ import {firstValueFrom} from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-  ) { }
 
   createUser(username: string) {
     firstValueFrom(this.http.post('http://localhost:3000/api/users', username)).then(() => {

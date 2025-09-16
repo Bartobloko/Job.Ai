@@ -4,20 +4,22 @@ import {UsersStore} from '../../utils/state/users/users.state';
 import {AuthService} from '../../utils/data-acces/auth/auth.service';
 import {UserStore} from '../../utils/state/user/user.state';
 import {Router} from '@angular/router';
-import {CommonModule} from '@angular/common';
+
 import { NgIconComponent } from '@ng-icons/core';
 
 @Component({
     selector: 'app-auth',
   imports: [
     AccountCreateFormComponent,
-    CommonModule,
     NgIconComponent
-  ],
+],
     templateUrl: './auth.component.html',
     styleUrl: './auth.component.scss'
 })
 export class AuthComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
 
   usersStore = inject(UsersStore);
   userStore = inject(UserStore);
@@ -28,12 +30,6 @@ export class AuthComponent {
   cancelDelete(): void {}
   confirmDelete(userId: number) {}
   accountCreation: boolean = false;
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
-  }
 
   login(username: string) {
     this.authService.login(username);

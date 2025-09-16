@@ -19,7 +19,7 @@ async function scrapeJobOffers(accountId: number): Promise<ScrapedJob[]> {
   }
 
   const browser: Browser = await puppeteer.launch({ 
-    headless: false, 
+    headless: true,
     defaultViewport: { width: 920, height: 680 } 
   });
   const page: Page = await browser.newPage();

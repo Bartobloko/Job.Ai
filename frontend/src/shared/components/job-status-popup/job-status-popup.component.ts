@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent } from '@ng-icons/core';
 import { JobChange } from '../../../utils/data-acces/jobs-service/jobs.service';
@@ -11,12 +11,13 @@ import { JobChange } from '../../../utils/data-acces/jobs-service/jobs.service';
   styleUrls: ['./job-status-popup.component.scss']
 })
 export class JobStatusPopupComponent {
-  @Input() isVisible: boolean = false;
-  @Input() changedJobs: JobChange[] = [];
-  @Input() totalJobs: number = 0;
-  @Output() close = new EventEmitter<void>();
+  readonly isVisible = input<boolean>(false);
+  readonly changedJobs = input<JobChange[]>([]);
+  readonly totalJobs = input<number>(0);
+  readonly close = output<void>();
 
   onClose() {
+    // TODO: The 'emit' function requires a mandatory void argument
     this.close.emit();
   }
 

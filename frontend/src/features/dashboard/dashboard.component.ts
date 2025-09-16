@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {JobsService} from '../../utils/data-acces/jobs-service/jobs.service';
 import {StatsService} from './utils/stats-service/stats.service';
 import {Log} from './utils/interfaces/log';
-import {DatePipe, CommonModule} from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import {SettingsStore} from '../../utils/state/settings/settings.state';
 import {UserStore} from '../../utils/state/user/user.state';
 import {firstValueFrom, Subscription} from 'rxjs';
@@ -30,6 +30,11 @@ import { WebsocketService } from '../../utils/data-acces/websocket/websocket.ser
 
 
 export class DashboardComponent implements OnInit, OnDestroy {
+  private botService = inject(BotService);
+  private statsService = inject(StatsService);
+  private fb = inject(FormBuilder);
+  private websocketService = inject(WebsocketService);
+
 
   settingsStore = inject(SettingsStore);
   userStore = inject(UserStore);
@@ -38,12 +43,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isBotRunning = false;
   private subscriptions: Subscription[] = [];
 
-  constructor(
-    private botService: BotService,
-    private statsService: StatsService,
-    private fb: FormBuilder,
-    private websocketService: WebsocketService
-  ) {
+  constructor() {
     this.botForm = this.fb.group({
       prompt: ['', Validators.required],
       experience: ['', [

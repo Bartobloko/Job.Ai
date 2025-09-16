@@ -5,25 +5,21 @@ import { User } from '../../utils/interfaces/user';
 import {UserStore} from '../../utils/state/user/user.state';
 import {AuthService} from '../../utils/data-acces/auth/auth.service';
 import { NgIconComponent } from '@ng-icons/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-navbar',
     imports: [
-        RouterLink,
-        RouterLinkActive,
-        NgIconComponent,
-        CommonModule
-    ],
+    RouterLink,
+    RouterLinkActive,
+    NgIconComponent
+],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
+  private authService = inject(AuthService);
 
-
-  constructor(
-    private authService: AuthService
-  ) {}
 
   isAccountDropdownOpen = false;
   isMobileMenuOpen = false;

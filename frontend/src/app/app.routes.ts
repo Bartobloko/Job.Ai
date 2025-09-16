@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import {JobsTableComponent} from '../features/jobs-table/jobs-table.component';
-import {DashboardComponent} from '../features/dashboard/dashboard.component';
-import {AuthComponent} from '../features/auth/auth.component';
+
+
+
 import {authGuard} from '../utils/guards/auth.guard';
-import {SettingsComponent} from '../features/settings/settings.component';
+
 
 
 export const routes: Routes = [
@@ -15,22 +15,22 @@ export const routes: Routes = [
   {
     path: 'redirect',
     canActivate: [authGuard],
-    component: AuthComponent
+    loadComponent: () => import('../features/auth/auth.component').then(m => m.AuthComponent)
   },
   {
     path: 'auth',
-    component: AuthComponent
+    loadComponent: () => import('../features/auth/auth.component').then(m => m.AuthComponent)
   },
   {
     path: 'dashboard',
-    component: DashboardComponent,
+    loadComponent: () => import('../features/dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
   {
     path: 'jobs',
-    component: JobsTableComponent,
+    loadComponent: () => import('../features/jobs-table/jobs-table.component').then(m => m.JobsTableComponent),
   },
   {
     path: 'settings',
-    component: SettingsComponent,
+    loadComponent: () => import('../features/settings/settings.component').then(m => m.SettingsComponent),
   }
 ];

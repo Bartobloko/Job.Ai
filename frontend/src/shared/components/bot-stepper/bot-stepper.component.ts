@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, inject, input } from '@angular/core';
+
 import { NgIconComponent } from '@ng-icons/core';
 import { WebsocketService, BotStage, ScrapingStageUpdate, AnalysisStageUpdate, BotComplete, BotError } from '../../../utils/data-acces/websocket/websocket.service';
 import { Subscription } from 'rxjs';
@@ -24,13 +24,15 @@ export interface StepperSubStep {
 @Component({
   selector: 'app-bot-stepper',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [NgIconComponent],
   templateUrl: './bot-stepper.component.html',
   styleUrls: ['./bot-stepper.component.scss']
 })
 export class BotStepperComponent implements OnInit, OnDestroy {
-  @Input() userId: string = '';
-  @Input() isVisible: boolean = false;
+  private websocketService = inject(WebsocketService);
+
+  readonly userId = input<string>('');
+  readonly isVisible = input<boolean>(false);
 
   steps: StepperStep[] = [
     {
@@ -61,10 +63,8 @@ export class BotStepperComponent implements OnInit, OnDestroy {
   hasError = false;
   completionSummary: BotComplete | null = null;
 
-  constructor(private websocketService: WebsocketService) {}
-
   ngOnInit() {
-    if (this.userId) {
+    if (this.userId()) {
       // Don't connect here as connection is managed by dashboard
       this.setupSubscriptions();
     }

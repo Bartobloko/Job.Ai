@@ -1,124 +1,122 @@
 <!-- Job Status Change Popup -->
-<div 
-  *ngIf="isVisible"
-  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-  (click)="onBackdropClick($event)"
->
-  <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-fade-in">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-primary-500 to-primary-600 p-6 text-white">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-            <ng-icon name="heroArrowPath" class="w-6 h-6"></ng-icon>
-          </div>
-          <div>
-            <h2 class="text-xl font-bold">Job Recheck Results</h2>
-            <p class="text-primary-100 text-sm">{{ totalJobs }} jobs processed</p>
-          </div>
-        </div>
-        <button 
-          (click)="onClose()"
-          class="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors duration-200"
-        >
-          <ng-icon name="heroXMark" class="w-5 h-5"></ng-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="p-6 overflow-y-auto max-h-[60vh]">
-      <div *ngIf="changedJobs.length === 0" class="text-center py-8">
-        <div class="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <ng-icon name="heroCheckCircle" class="w-8 h-8 text-success-600"></ng-icon>
-        </div>
-        <h3 class="text-lg font-semibold text-secondary-900 mb-2">No Status Changes</h3>
-        <p class="text-secondary-600">All jobs maintained their approval status after rechecking.</p>
-      </div>
-
-      <div *ngIf="changedJobs.length > 0">
-        <div class="mb-4 p-4 bg-warning-50 border border-warning-200 rounded-lg">
+@if (isVisible()) {
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    (click)="onBackdropClick($event)"
+    >
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-fade-in">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-primary-500 to-primary-600 p-6 text-white">
+        <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <ng-icon name="heroExclamationTriangle" class="w-5 h-5 text-warning-600 mr-2"></ng-icon>
-            <span class="font-medium text-warning-800">
-              {{ changedJobs.length }} job{{ changedJobs.length === 1 ? '' : 's' }} changed status
-            </span>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div 
-            *ngFor="let job of changedJobs; trackBy: trackByJobId"
-            class="border border-secondary-200 rounded-xl p-4 hover:shadow-sm transition-shadow duration-200"
-          >
-            <div class="flex items-start justify-between">
-              <div class="flex-1 min-w-0">
-                <h4 class="font-semibold text-secondary-900 truncate mb-1">{{ job.title }}</h4>
-                <p class="text-sm text-secondary-600 mb-3">{{ job.company }}</p>
-                
-                <div class="flex items-center space-x-4">
-                  <div class="flex items-center">
-                    <span class="text-xs text-secondary-500 mr-2">From:</span>
-                    <div class="flex items-center">
-                      <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2"
-                           [ngClass]="getStatusBgColor(job.oldStatus)">
-                        <ng-icon 
-                          [name]="getStatusIcon(job.oldStatus)" 
-                          class="w-4 h-4"
-                          [ngClass]="getStatusColor(job.oldStatus)">
-                        </ng-icon>
-                      </div>
-                      <span class="text-sm font-medium" [ngClass]="getStatusColor(job.oldStatus)">
-                        {{ job.oldStatus }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <ng-icon name="heroArrowRight" class="w-4 h-4 text-secondary-400"></ng-icon>
-                  
-                  <div class="flex items-center">
-                    <span class="text-xs text-secondary-500 mr-2">To:</span>
-                    <div class="flex items-center">
-                      <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2"
-                           [ngClass]="getStatusBgColor(job.newStatus)">
-                        <ng-icon 
-                          [name]="getStatusIcon(job.newStatus)" 
-                          class="w-4 h-4"
-                          [ngClass]="getStatusColor(job.newStatus)">
-                        </ng-icon>
-                      </div>
-                      <span class="text-sm font-medium" [ngClass]="getStatusColor(job.newStatus)">
-                        {{ job.newStatus }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <a 
-                [href]="job.link" 
-                target="_blank"
-                class="ml-4 inline-flex items-center px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-              >
-                <ng-icon name="heroEye" class="w-4 h-4 mr-1"></ng-icon>
-                View
-              </a>
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+              <ng-icon name="heroArrowPath" class="w-6 h-6"></ng-icon>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold">Job Recheck Results</h2>
+              <p class="text-primary-100 text-sm">{{ totalJobs() }} jobs processed</p>
             </div>
           </div>
+          <button
+            (click)="onClose()"
+            class="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors duration-200"
+            >
+            <ng-icon name="heroXMark" class="w-5 h-5"></ng-icon>
+          </button>
         </div>
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="bg-secondary-50 px-6 py-4 border-t border-secondary-200">
-      <div class="flex justify-end">
-        <button 
-          (click)="onClose()"
-          class="px-6 py-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded-lg transition-colors duration-200"
-        >
-          Close
-        </button>
+      <!-- Content -->
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        @if (changedJobs().length === 0) {
+          <div class="text-center py-8">
+            <div class="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ng-icon name="heroCheckCircle" class="w-8 h-8 text-success-600"></ng-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-secondary-900 mb-2">No Status Changes</h3>
+            <p class="text-secondary-600">All jobs maintained their approval status after rechecking.</p>
+          </div>
+        }
+        @if (changedJobs().length > 0) {
+          <div>
+            <div class="mb-4 p-4 bg-warning-50 border border-warning-200 rounded-lg">
+              <div class="flex items-center">
+                <ng-icon name="heroExclamationTriangle" class="w-5 h-5 text-warning-600 mr-2"></ng-icon>
+                <span class="font-medium text-warning-800">
+                  {{ changedJobs().length }} job{{ changedJobs().length === 1 ? '' : 's' }} changed status
+                </span>
+              </div>
+            </div>
+            <div class="space-y-4">
+              @for (job of changedJobs(); track trackByJobId($index, job)) {
+                <div
+                  class="border border-secondary-200 rounded-xl p-4 hover:shadow-sm transition-shadow duration-200"
+                  >
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1 min-w-0">
+                      <h4 class="font-semibold text-secondary-900 truncate mb-1">{{ job.title }}</h4>
+                      <p class="text-sm text-secondary-600 mb-3">{{ job.company }}</p>
+                      <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                          <span class="text-xs text-secondary-500 mr-2">From:</span>
+                          <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2"
+                              [ngClass]="getStatusBgColor(job.oldStatus)">
+                              <ng-icon
+                                [name]="getStatusIcon(job.oldStatus)"
+                                class="w-4 h-4"
+                                [ngClass]="getStatusColor(job.oldStatus)">
+                              </ng-icon>
+                            </div>
+                            <span class="text-sm font-medium" [ngClass]="getStatusColor(job.oldStatus)">
+                              {{ job.oldStatus }}
+                            </span>
+                          </div>
+                        </div>
+                        <ng-icon name="heroArrowRight" class="w-4 h-4 text-secondary-400"></ng-icon>
+                        <div class="flex items-center">
+                          <span class="text-xs text-secondary-500 mr-2">To:</span>
+                          <div class="flex items-center">
+                            <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2"
+                              [ngClass]="getStatusBgColor(job.newStatus)">
+                              <ng-icon
+                                [name]="getStatusIcon(job.newStatus)"
+                                class="w-4 h-4"
+                                [ngClass]="getStatusColor(job.newStatus)">
+                              </ng-icon>
+                            </div>
+                            <span class="text-sm font-medium" [ngClass]="getStatusColor(job.newStatus)">
+                              {{ job.newStatus }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <a
+                      [href]="job.link"
+                      target="_blank"
+                      class="ml-4 inline-flex items-center px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                      >
+                      <ng-icon name="heroEye" class="w-4 h-4 mr-1"></ng-icon>
+                      View
+                    </a>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+      <!-- Footer -->
+      <div class="bg-secondary-50 px-6 py-4 border-t border-secondary-200">
+        <div class="flex justify-end">
+          <button
+            (click)="onClose()"
+            class="px-6 py-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded-lg transition-colors duration-200"
+            >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+}

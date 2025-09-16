@@ -1,5 +1,5 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, output } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { NgIconComponent } from '@ng-icons/core';
 import { JobsService, JobDay, RecheckResult } from '../../../utils/data-acces/jobs-service/jobs.service';
@@ -7,20 +7,20 @@ import { JobsService, JobDay, RecheckResult } from '../../../utils/data-acces/jo
 @Component({
   selector: 'app-job-recheck',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgIconComponent],
+  imports: [FormsModule, NgIconComponent],
   templateUrl: './job-recheck.component.html',
   styleUrls: ['./job-recheck.component.scss']
 })
 export class JobRecheckComponent implements OnInit {
-  @Output() recheckComplete = new EventEmitter<RecheckResult>();
+  private jobsService = inject(JobsService);
+
+  readonly recheckComplete = output<RecheckResult>();
 
   jobDays: JobDay[] = [];
   selectedDate: string = '';
   isLoading: boolean = false;
   isRecheckingJobs: boolean = false;
   error: string = '';
-
-  constructor(private jobsService: JobsService) {}
 
   ngOnInit() {
     this.loadJobDays();

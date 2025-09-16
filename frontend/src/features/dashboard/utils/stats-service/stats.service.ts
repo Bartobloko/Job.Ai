@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {JobSummary} from '../../../../utils/interfaces/job-summary';
 import {HttpClient} from '@angular/common/http';
 import {Log} from '../interfaces/log';
@@ -8,10 +8,8 @@ import {BotStats} from '../interfaces/bot-stats';
   providedIn: 'root'
 })
 export class StatsService {
+  private http = inject(HttpClient);
 
-  constructor(
-    private http: HttpClient
-  ) { }
 
   getJobSummary() {
     return this.http.get<JobSummary>('http://localhost:3000/api/jobs/summary')
