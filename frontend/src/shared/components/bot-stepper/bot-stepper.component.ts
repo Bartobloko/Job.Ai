@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 export interface StepperStep {
   id: string;
   label: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'error';
+  status: 'pending' | 'in_progress' | 'done' | 'error';
   message?: string;
   icon?: string;
   subSteps?: StepperSubStep[];
@@ -16,7 +16,7 @@ export interface StepperStep {
 export interface StepperSubStep {
   id: string;
   label: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'error' | 'nothing_to_scrap';
+  status: 'pending' | 'in_progress' | 'done' | 'error' | 'nothing_to_scrap';
   message?: string;
   jobsFound?: number;
 }
@@ -142,8 +142,8 @@ export class BotStepperComponent implements OnInit, OnDestroy {
     }
 
     // Update main scraping step status based on substeps
-    if (scrapingStep.subSteps.every(s => ['completed', 'done', 'error', 'nothing_to_scrap'].includes(s.status))) {
-      scrapingStep.status = 'completed';
+    if (scrapingStep.subSteps.every(s => ['done', 'error', 'nothing_to_scrap'].includes(s.status))) {
+      scrapingStep.status = 'done';
       scrapingStep.message = 'All sites scraped';
     } else if (scrapingStep.subSteps.some(s => s.status === 'in_progress')) {
       scrapingStep.status = 'in_progress';
@@ -167,10 +167,10 @@ export class BotStepperComponent implements OnInit, OnDestroy {
     this.isCompleted = true;
     this.completionSummary = summary;
     
-    // Mark all steps as completed
+    // Mark all steps as done
     this.steps.forEach(step => {
       if (step.status !== 'error') {
-        step.status = 'completed';
+        step.status = 'done';
       }
     });
   }
@@ -209,7 +209,7 @@ export class BotStepperComponent implements OnInit, OnDestroy {
 
   getStepIcon(status: string): string {
     switch (status) {
-      case 'completed':
+      case 'done':
         return 'heroCheckCircle';
       case 'in_progress':
         return 'heroArrowPath';
@@ -222,7 +222,7 @@ export class BotStepperComponent implements OnInit, OnDestroy {
 
   getStepStatusClass(status: string): string {
     switch (status) {
-      case 'completed':
+      case 'done':
         return 'text-success-600 bg-success-100';
       case 'in_progress':
         return 'text-primary-600 bg-primary-100 animate-pulse';
